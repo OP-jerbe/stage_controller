@@ -106,3 +106,13 @@ class Stage:
             .decode('utf-8')
             .strip()
         )
+
+
+class Motor1(Stage):
+    def __init__(self, com_port: Optional[str] = None) -> None:
+        super().__init__(com_port)
+
+
+class Motor2(Stage):
+    def __init__(self, com_port: Optional[str] = None) -> None:
+        super().__init__(com_port)
