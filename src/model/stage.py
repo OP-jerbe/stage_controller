@@ -1,5 +1,5 @@
 from threading import Lock
-from typing import Optional
+from typing import Literal, Optional
 
 import serial
 
@@ -106,3 +106,24 @@ class Stage:
             .decode('utf-8')
             .strip()
         )
+
+    def setAcceleration(self, motor: Literal[1, 2], value: int) -> None:
+        if not isinstance(motor, int):
+            raise ValueError(
+                f'Expected int for motor arg but got {type(motor).__name__}.'
+            )
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if motor not in (1, 2):
+            raise ValueError(
+                f'Invalid motor selection: {motor}. Motor selectiong must be 1 or 2.'
+            )
+        if 0 <= value <= 65535:
+            raise ValueError(
+                f'Invalid accleration setting: {value}. Acceleration setting must be between 0 and 65535.'
+            )
+
+        command = f':{motor}A{value}'
+        self._send_command(command)
