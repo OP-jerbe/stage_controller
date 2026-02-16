@@ -431,3 +431,15 @@ class Stage:
 
         command = f':{motor}I{value}'
         self._send_command(command)
+
+    def setLoadError(self, motor: Literal[1, 2], value: int) -> None:
+        """Set the allowable following error before faulting"""
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+
+        command = f':{motor}L{value}'
+        self._send_command(command)
