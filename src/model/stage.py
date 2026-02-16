@@ -393,12 +393,35 @@ class Stage:
         self._send_command(command)
 
     def setEncoderCPR(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the encoder cycles-per-revolution (or pulses-per-sec x4)"""
+        """Set the encoder cycles-per-revolution (or PPS [pulses-per-sec] x4)"""
 
+        VALID_QUADRATURE_COUNTS = {
+            192,
+            276,
+            400,
+            500,
+            768,
+            800,
+            1000,
+            1024,
+            1536,
+            1600,
+            2000,
+            2048,
+            3200,
+            4000,
+            4096,
+            8192,
+        }
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if value not in VALID_QUADRATURE_COUNTS:
+            raise ValueError(
+                f"Invalid CPR '{value}'. Must be a quadrature total (PPR * 4) "
+                f'supported by the datasheet. Supported: {sorted(list(VALID_QUADRATURE_COUNTS))}'
             )
 
         command = f':{motor}E{value}'
