@@ -274,3 +274,19 @@ class Stage:
 
         command = f':{motor}v{value}'
         self._send_command(command)
+
+    def goToAbsPos(self, motor: Literal[1, 2], position: float) -> None:
+        """Go to absolute position 0-360.0 in degrees"""
+
+        self._check_motor_input(motor)
+        if not isinstance(position, (int, float)):
+            raise ValueError(
+                f'Expected int or float but got {type(position).__name__}.'
+            )
+        if not 0 <= position <= 360.0:
+            raise ValueError(
+                f'Invalid position setting: {position}. Position setting must be between 0 and 360.0 degrees.'
+            )
+
+        command = f':{motor}x{position}'
+        self._send_command(command)
