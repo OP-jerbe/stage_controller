@@ -375,3 +375,19 @@ class Stage:
 
         command = f':{motor}C{value}'
         self._send_command(command)
+
+    def setAddress(self, motor: Literal[1, 2], value: int | str) -> None:
+        """Set the address of a motor"""
+
+        self._check_motor_input(motor)
+        if not isinstance(value, (int, str)):
+            raise ValueError(
+                f'Expected int or str for value arg but got {type(value).__name__}.'
+            )
+        if value not in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'):
+            raise ValueError(
+                f'Invalid address value: {value}. Valid address values are 1, 2, 3, 4, 5, 6, 7, 8, 9, A, B, C, D, E'
+            )
+
+        command = f':{motor}D{value}'
+        self._send_command(command)
