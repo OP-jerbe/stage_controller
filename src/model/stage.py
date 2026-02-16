@@ -391,3 +391,15 @@ class Stage:
 
         command = f':{motor}D{value}'
         self._send_command(command)
+
+    def setEncoderCPR(self, motor: Literal[1, 2], value: int) -> None:
+        """Set the encoder cycles-per-revolution (or pulses-per-sec x4)"""
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+
+        command = f':{motor}E{value}'
+        self._send_command(command)
