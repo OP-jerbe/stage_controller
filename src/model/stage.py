@@ -5,6 +5,8 @@ import serial
 
 
 class Stage:
+    MOTOR_POSITION_RANGE = (-2.147e9, 2.147e9)
+    CONTROLLER_MAX_CURRENT_RATING = 2.0  # AMPS
     VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
     VALID_ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
     VALID_BAUD_RATES = {9600, 19200, 38400, 57600, 115200}
@@ -27,13 +29,14 @@ class Stage:
         8192,
     }
 
-    def __init__(self, com_port: Optional[str] = None) -> None:
+    def __init__(
+        self, com_port: Optional[str] = None, motor_max_current: float = 0.62
+    ) -> None:
         self._lock = Lock()
         self._term_char = '\r'
         self.com_port = com_port
         self.serial_port: Optional[serial.Serial] = None
-        self.max_motor_pos = 2.147e9
-        self.min_motor_pos = -2.147e9
+        self.motor_max_current = motor_max_current  # AMPS
 
         if self.com_port:
             self.open_connection(self.com_port)
@@ -170,9 +173,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if not self.min_motor_pos <= position <= self.max_motor_pos:
+        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
+                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
             )
         command = f':{motor}c{position}'
         self._send_command(command)
@@ -267,9 +270,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if not self.min_motor_pos <= position <= self.max_motor_pos:
+        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
+                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
             )
 
         command = f':{motor}p{position}'
@@ -337,9 +340,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if not self.min_motor_pos <= position <= self.max_motor_pos:
+        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
+                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
             )
 
         command = f':{motor}{set_point}{position}'
@@ -451,18 +454,33 @@ class Stage:
         command = f':{motor}E{value}'
         self._send_command(command)
 
-    def setHoldingCurr(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the holding current"""
+    def setHoldingCurr(self, motor: Literal[1, 2], amps: float) -> None:
+        """
+        Set the holding current in Amperes.
+        The hardware uses a 0-31 scale where 31 = 2.0A.
+        """
 
         self._check_motor_input(motor)
-        if not isinstance(value, int):
+        if not isinstance(amps, (int, float)):
             raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
+                f'Expected int or float for amps but got {type(amps).__name__}.'
             )
-        if not 0 <= value <= 31:
+        if amps < 0:
+            raise ValueError(f'Current cannot be negative (got {amps}A).')
+        if amps > self.motor_max_current:
             raise ValueError(
-                f'Invalid holding current value: {value}. Valid holding current is 0-31.'
+                f'Current {amps}A exceeds safe limit for this motor ({self.motor_max_current}A). '
+                f'Higher current may cause overheating or winding damage.'
             )
+
+        hw_max_value = 31
+        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 2/31=0.0645
+        motor_max_value = int(self.motor_max_current / amps_per_step)  # 9
+
+        value = round(amps / amps_per_step)
+
+        # Final hardware clamp just in case of rounding edge-cases
+        value = max(0, min(value, motor_max_value, hw_max_value))
 
         command = f':{motor}H{value}'
         self._send_command(command)
