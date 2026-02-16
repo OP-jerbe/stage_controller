@@ -1,5 +1,5 @@
 from threading import Lock
-from typing import Literal, Optional
+from typing import Any, Literal, Optional
 
 import serial
 
@@ -107,22 +107,26 @@ class Stage:
             .strip()
         )
 
+    @staticmethod
+    def _check_motor_input(value: Any) -> None:
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for motor arg but got {type(value).__name__}.'
+            )
+        if value not in (1, 2):
+            raise ValueError(
+                f'Invalid motor selection: {value}. Motor selection must be 1 or 2.'
+            )
+
     ###################################################################################
     ################################# Set Commands ####################################
     ###################################################################################
 
     def setAccel(self, motor: Literal[1, 2], value: int) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
+        self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
                 f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
             )
         if 0 <= value <= 65535:
             raise ValueError(
@@ -132,55 +136,34 @@ class Stage:
         command = f':{motor}a{value}'
         self._send_command(command)
 
-    def setHome(self, motor: Literal[1, 2], value: int) -> None:
-        if not isinstance(motor, int):
+    def setHome(self, motor: Literal[1, 2], position: int) -> None:
+        self._check_motor_input(motor)
+        if not isinstance(position, int):
             raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
+                f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if not isinstance(value, int):
+        if -2.147e9 <= position <= -2.147e9:
             raise ValueError(
-                f'Expected int for value arg but got {type(value).__name__}.'
+                f'Invalid position setting: {position}. Position setting must be between -2.147e9 and 2.147e9.'
             )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
-            )
-        if -2.147e9 <= value <= -2.147e9:
-            raise ValueError(
-                f'Invalid accleration setting: {value}. Acceleration setting must be between -2.147e9 and 2.147e9.'
-            )
-        command = f':{motor}c{value}'
+        command = f':{motor}c{position}'
         self._send_command(command)
 
     def goToSetPoint(self, motor: Literal[1, 2], set_point: int) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
+        self._check_motor_input(motor)
         if not isinstance(set_point, int):
             raise ValueError(
                 f'Expected int for value arg but got {type(set_point).__name__}.'
-            )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
             )
 
         command = f':{motor}d{set_point}'
         self._send_command(command)
 
     def setHalt(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
+        self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
                 f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
             )
         if value not in (1, 2):
             raise ValueError(
@@ -191,27 +174,13 @@ class Stage:
         self._send_command(command)
 
     def initMotor(self, motor: Literal[1, 2]) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
-            )
+        self._check_motor_input(motor)
 
         command = f':{motor}i1'
         self._send_command(command)
 
     def jog(self, motor: Literal[1, 2], steps: int) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
-            )
+        self._check_motor_input(motor)
         if not isinstance(steps, int):
             raise ValueError(
                 f'Expected int for steps arg but got {type(steps).__name__}.'
@@ -221,17 +190,10 @@ class Stage:
         self._send_command(command)
 
     def setOutput2(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
+        self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
                 f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
             )
         if value not in (1, 2):
             raise ValueError(
@@ -242,17 +204,10 @@ class Stage:
         self._send_command(command)
 
     def setOutput1(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
+        self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
                 f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
             )
         if value not in (1, 2):
             raise ValueError(
@@ -263,21 +218,14 @@ class Stage:
         self._send_command(command)
 
     def goToPos(self, motor: Literal[1, 2], position: int) -> None:
-        if not isinstance(motor, int):
-            raise ValueError(
-                f'Expected int for motor arg but got {type(motor).__name__}.'
-            )
+        self._check_motor_input(motor)
         if not isinstance(position, int):
             raise ValueError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if motor not in (1, 2):
-            raise ValueError(
-                f'Invalid motor selection: {motor}. Motor selection must be 1 or 2.'
-            )
         if -2.147e9 <= position <= -2.147e9:
             raise ValueError(
-                f'Invalid accleration setting: {position}. Acceleration setting must be between -2.147e9 and 2.147e9.'
+                f'Invalid position setting: {position}. Position setting must be between -2.147e9 and 2.147e9.'
             )
 
         command = f':{motor}p{position}'
