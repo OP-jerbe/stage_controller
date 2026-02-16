@@ -443,3 +443,19 @@ class Stage:
 
         command = f':{motor}L{value}'
         self._send_command(command)
+
+    def setMstepsPerStep(self, motor: Literal[1, 2], microsteps: int) -> None:
+        """Set the number of microsteps per step"""
+
+        self._check_motor_input(motor)
+        if not isinstance(microsteps, int):
+            raise ValueError(
+                f'Expected int for microsteps arg but got {type(microsteps).__name__}'
+            )
+        if not 2 <= microsteps < 256:
+            raise ValueError(
+                f'Invalid value for microsteps arg: {microsteps}. Valid microsteps value is 2-256'
+            )
+
+        command = f':{motor}M{microsteps}'
+        self._send_command(command)
