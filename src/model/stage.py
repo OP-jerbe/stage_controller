@@ -132,7 +132,7 @@ class Stage:
             raise ValueError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
-        if 0 <= value <= 65535:
+        if not 0 <= value <= 65535:
             raise ValueError(
                 f'Invalid accleration setting: {value}. Acceleration setting must be between 0 and 65535.'
             )
@@ -148,7 +148,7 @@ class Stage:
             raise ValueError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if self.min_motor_pos <= position <= self.max_motor_pos:
+        if not self.min_motor_pos <= position <= self.max_motor_pos:
             raise ValueError(
                 f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
             )
@@ -245,7 +245,7 @@ class Stage:
             raise ValueError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if self.min_motor_pos <= position <= self.max_motor_pos:
+        if not self.min_motor_pos <= position <= self.max_motor_pos:
             raise ValueError(
                 f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
             )
@@ -307,7 +307,7 @@ class Stage:
             raise ValueError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if self.min_motor_pos <= position <= self.max_motor_pos:
+        if not self.min_motor_pos <= position <= self.max_motor_pos:
             raise ValueError(
                 f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
             )
