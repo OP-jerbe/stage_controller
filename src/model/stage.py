@@ -107,7 +107,7 @@ class Stage:
             .strip()
         )
 
-    def setAcceleration(self, motor: Literal[1, 2], value: int) -> None:
+    def setAccel(self, motor: Literal[1, 2], value: int) -> None:
         if not isinstance(motor, int):
             raise ValueError(
                 f'Expected int for motor arg but got {type(motor).__name__}.'
@@ -127,3 +127,21 @@ class Stage:
 
         command = f':{motor}A{value}'
         self._send_command(command)
+
+    def setHome(self, motor: Literal[1, 2], value: int) -> None:
+        if not isinstance(motor, int):
+            raise ValueError(
+                f'Expected int for motor arg but got {type(motor).__name__}.'
+            )
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if motor not in (1, 2):
+            raise ValueError(
+                f'Invalid motor selection: {motor}. Motor selectiong must be 1 or 2.'
+            )
+        if -2.147e9 <= value <= -2.147e9:
+            raise ValueError(
+                f'Invalid accleration setting: {value}. Acceleration setting must be between -2.147e9 and 2.147e9.'
+            )
