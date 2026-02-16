@@ -314,3 +314,19 @@ class Stage:
 
         command = f':{motor}{set_point}{position}'
         self._send_command(command)
+
+    def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
+        """Set the non-volitile acceleration in steps/sec-sq"""
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if not 0 <= value <= 65535:
+            raise ValueError(
+                f'Invalid accleration setting: {value}. Acceleration setting must be between 0 and 65535.'
+            )
+
+        command = f':{motor}A{value}'
+        self._send_command(command)
