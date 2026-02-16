@@ -202,3 +202,20 @@ class Stage:
 
         command = f':{motor}i1'
         self._send_command(command)
+
+    def jog(self, motor: Literal[1, 2], steps: int) -> None:
+        if not isinstance(motor, int):
+            raise ValueError(
+                f'Expected int for motor arg but got {type(motor).__name__}.'
+            )
+        if motor not in (1, 2):
+            raise ValueError(
+                f'Invalid motor selection: {motor}. Motor selectiong must be 1 or 2.'
+            )
+        if not isinstance(steps, int):
+            raise ValueError(
+                f'Expected int for steps arg but got {type(steps).__name__}.'
+            )
+
+        command = f':{motor}j{steps}'
+        self._send_command(command)
