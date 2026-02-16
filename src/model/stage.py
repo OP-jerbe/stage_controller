@@ -332,7 +332,13 @@ class Stage:
         self._send_command(command)
 
     def setBaud(self, motor: Literal[1, 2], baud: Literal[1, 2, 3, 4, 5]) -> None:
-        """Set the baud rate for serial communication"""
+        """
+        Set the baud rate for serial communication.
+
+        Args:
+            Motor (int): the motor to command (x-axis=1, y-axis=2)
+            baud (int): baud rate where: 1=9600, 2=19200, 3=38400, 4=57600, 5=115200
+        """
 
         self._check_motor_input(motor)
         if not isinstance(baud, int):
