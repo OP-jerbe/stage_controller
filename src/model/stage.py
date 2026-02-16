@@ -234,6 +234,7 @@ class Stage:
         self._send_command(command)
 
     def setSpeed(self, motor: Literal[1, 2], value: int) -> None:
+        """Set the speed in steps/sec"""
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
@@ -241,4 +242,16 @@ class Stage:
             )
 
         command = f':{motor}s{value}'
+        self._send_command(command)
+
+    def setVelocity(self, motor: Literal[1, 2], value: int) -> None:
+        """Set the max velocity in steps/sec"""
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+
+        command = f':{motor}v{value}'
         self._send_command(command)
