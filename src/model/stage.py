@@ -107,6 +107,10 @@ class Stage:
             .strip()
         )
 
+    ###################################################################################
+    ################################# Set Commands ####################################
+    ###################################################################################
+
     def setAccel(self, motor: Literal[1, 2], value: int) -> None:
         if not isinstance(motor, int):
             raise ValueError(
@@ -146,4 +150,21 @@ class Stage:
                 f'Invalid accleration setting: {value}. Acceleration setting must be between -2.147e9 and 2.147e9.'
             )
         command = f':{motor}c{value}'
+        self._send_command(command)
+
+    def goToSetPoint(self, motor: Literal[1, 2], set_point: int) -> None:
+        if not isinstance(motor, int):
+            raise ValueError(
+                f'Expected int for motor arg but got {type(motor).__name__}.'
+            )
+        if not isinstance(set_point, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(set_point).__name__}.'
+            )
+        if motor not in (1, 2):
+            raise ValueError(
+                f'Invalid motor selection: {motor}. Motor selectiong must be 1 or 2.'
+            )
+
+        command = f':{motor}d{set_point}'
         self._send_command(command)
