@@ -5,6 +5,27 @@ import serial
 
 
 class Stage:
+    VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+    VALID_ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
+    VALID_QUADRATURE_COUNTS = {
+        192,
+        276,
+        400,
+        500,
+        768,
+        800,
+        1000,
+        1024,
+        1536,
+        1600,
+        2000,
+        2048,
+        3200,
+        4000,
+        4096,
+        8192,
+    }
+
     def __init__(self, com_port: Optional[str] = None) -> None:
         self._lock = Lock()
         self._term_char = '\r'
@@ -293,15 +314,15 @@ class Stage:
 
     def setSetPoint(self, motor: Literal[1, 2], set_point: int, position: int) -> None:
         """Set a set point position. Valid set points are 0-9"""
-        VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+
         self._check_motor_input(motor)
         if not isinstance(set_point, int):
             raise TypeError(
                 f'Expected int for set_point arg but got {type(set_point).__name__}.'
             )
-        if set_point not in VALID_SET_POINTS:
+        if set_point not in self.VALID_SET_POINTS:
             raise ValueError(
-                f'Invalid set point selection. Valid set points are {sorted(list(VALID_SET_POINTS))}.'
+                f'Invalid set point selection. Valid set points are {sorted(list(self.VALID_SET_POINTS))}.'
             )
         if not isinstance(position, int):
             raise TypeError(
@@ -376,50 +397,35 @@ class Stage:
 
     def setAddress(self, motor: Literal[1, 2], value: int | str) -> None:
         """Set the address of a motor"""
-        VALID_ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
+
         self._check_motor_input(motor)
         if not isinstance(value, (int, str)):
             raise TypeError(
                 f'Expected int or str for value arg but got {type(value).__name__}.'
             )
-        if value not in VALID_ADDRESSES:
+        if value not in self.VALID_ADDRESSES:
             raise ValueError(
-                f'Invalid address value: {value}. Valid address values are {sorted(list(VALID_ADDRESSES))}'
+                f'Invalid address value: {value}. Valid address values are {sorted(list(self.VALID_ADDRESSES))}'
             )
 
         command = f':{motor}D{value}'
         self._send_command(command)
 
     def setEncoderCPR(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the encoder cycles-per-revolution (or PPS [pulses-per-sec] x4)"""
+        """
+        Set the encoder quadrature counts (PPR x 4).
+        Default factory setting is 8192 (2048 PPR * 4).
+        """
 
-        VALID_QUADRATURE_COUNTS = {
-            192,
-            276,
-            400,
-            500,
-            768,
-            800,
-            1000,
-            1024,
-            1536,
-            1600,
-            2000,
-            2048,
-            3200,
-            4000,
-            4096,
-            8192,
-        }
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
-        if value not in VALID_QUADRATURE_COUNTS:
+        if value not in self.VALID_QUADRATURE_COUNTS:
             raise ValueError(
                 f"Invalid CPR '{value}'. Must be a quadrature total (PPR * 4) "
-                f'supported by the datasheet. Supported: {sorted(list(VALID_QUADRATURE_COUNTS))}'
+                f'supported by the datasheet. Supported: {sorted(list(self.VALID_QUADRATURE_COUNTS))}'
             )
 
         command = f':{motor}E{value}'
