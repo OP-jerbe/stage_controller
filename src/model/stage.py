@@ -295,16 +295,16 @@ class Stage:
 
     def setSetPoint(self, motor: Literal[1, 2], set_point: int, position: int) -> None:
         """Set a set point position. Valid set points are 0-9"""
-
+        VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
         self._check_motor_input(motor)
         if not isinstance(set_point, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for set_point arg but got {type(set_point).__name__}.'
             )
-        if set_point not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
-            raise ValueError('Invalid set point selection. Valid set points are 0-9.')
+        if set_point not in VALID_SET_POINTS:
+            raise ValueError(f'Invalid set point selection. Valid set points are {sorted(list(VALID_SET_POINTS))}.')
         if not isinstance(position, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
         if not self.min_motor_pos <= position <= self.max_motor_pos:
