@@ -352,3 +352,26 @@ class Stage:
 
         command = f':{motor}B{baud}'
         self._send_command(command)
+
+    def setDirection(self, motor: Literal[1, 2], direction: str) -> None:
+        """
+        Set the direction of the motor to "CW" or "CCW"
+
+        Args:
+            motor (int): the motor to command (x-axis=1, y-axis=2)
+            direction (str): `CW` or `CCW` - the direction the motor will spin when commanded with a positive value.
+        """
+
+        self._check_motor_input(motor)
+        match direction:
+            case 'CW':
+                value = 0
+            case 'CCW':
+                value = 1
+            case _:
+                raise ValueError(
+                    f'Invalid direction {direction}. Valid directions are "CW" or "CCW".'
+                )
+
+        command = f':{motor}C{value}'
+        self._send_command(command)
