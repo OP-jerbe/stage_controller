@@ -163,6 +163,8 @@ class Stage:
             raise ValueError(
                 f'Expected int for value arg but got {type(set_point).__name__}.'
             )
+        if set_point not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
+            raise ValueError('Invalid set point selection. Valid set points are 0-9.')
 
         command = f':{motor}d{set_point}'
         self._send_command(command)
