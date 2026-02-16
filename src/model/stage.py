@@ -189,3 +189,16 @@ class Stage:
 
         command = f':{motor}h{value}'
         self._send_command(command)
+
+    def initMotor(self, motor: Literal[1, 2]) -> None:
+        if not isinstance(motor, int):
+            raise ValueError(
+                f'Expected int for motor arg but got {type(motor).__name__}.'
+            )
+        if motor not in (1, 2):
+            raise ValueError(
+                f'Invalid motor selection: {motor}. Motor selectiong must be 1 or 2.'
+            )
+
+        command = f':{motor}i1'
+        self._send_command(command)
