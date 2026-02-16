@@ -330,3 +330,19 @@ class Stage:
 
         command = f':{motor}A{value}'
         self._send_command(command)
+
+    def setBaud(self, motor: Literal[1, 2], baud: Literal[1, 2, 3, 4, 5]) -> None:
+        """Set the baud rate for serial communication"""
+
+        self._check_motor_input(motor)
+        if not isinstance(baud, int):
+            raise ValueError(
+                f'Expected int for baud arg but got {type(baud).__name__}.'
+            )
+        if baud not in [1, 2, 3, 4, 5]:
+            raise ValueError(
+                f'Invalid baud setting: {baud}. Baud setting must be 1-5 where 1=9600, 2=19200, 3=38400, 4=57600, 5=115200'
+            )
+
+        command = f':{motor}B{baud}'
+        self._send_command(command)
