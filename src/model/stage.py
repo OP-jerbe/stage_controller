@@ -125,6 +125,8 @@ class Stage:
     ###################################################################################
 
     def setAccel(self, motor: Literal[1, 2], value: int) -> None:
+        """Set the acceleration in steps/sec-sq"""
+
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
@@ -139,6 +141,8 @@ class Stage:
         self._send_command(command)
 
     def setHome(self, motor: Literal[1, 2], position: int) -> None:
+        """Home to position"""
+
         self._check_motor_input(motor)
         if not isinstance(position, int):
             raise ValueError(
@@ -152,6 +156,8 @@ class Stage:
         self._send_command(command)
 
     def goToSetPoint(self, motor: Literal[1, 2], set_point: int) -> None:
+        """Go to a predetermined set point position"""
+
         self._check_motor_input(motor)
         if not isinstance(set_point, int):
             raise ValueError(
@@ -162,6 +168,8 @@ class Stage:
         self._send_command(command)
 
     def setHalt(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
+        """Set the halt type. value=1=Hard Stop. value=2=Soft Stop"""
+
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
@@ -176,12 +184,16 @@ class Stage:
         self._send_command(command)
 
     def initMotor(self, motor: Literal[1, 2]) -> None:
+        """Initialize a motor"""
+
         self._check_motor_input(motor)
 
         command = f':{motor}i1'
         self._send_command(command)
 
     def jog(self, motor: Literal[1, 2], steps: int) -> None:
+        """Jog the motor a number of steps (can be negative)"""
+
         self._check_motor_input(motor)
         if not isinstance(steps, int):
             raise ValueError(
@@ -192,6 +204,8 @@ class Stage:
         self._send_command(command)
 
     def setOutput2(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
+        """Set the output2 state. value=1=On. value=2=Off"""
+
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
@@ -206,6 +220,8 @@ class Stage:
         self._send_command(command)
 
     def setOutput1(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
+        """Set the output1 state. value=1=On. value=2=Off"""
+
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
@@ -220,6 +236,8 @@ class Stage:
         self._send_command(command)
 
     def goToPos(self, motor: Literal[1, 2], position: int) -> None:
+        """Go to a postion"""
+
         self._check_motor_input(motor)
         if not isinstance(position, int):
             raise ValueError(
@@ -235,6 +253,7 @@ class Stage:
 
     def setSpeed(self, motor: Literal[1, 2], value: int) -> None:
         """Set the speed in steps/sec"""
+
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise ValueError(
