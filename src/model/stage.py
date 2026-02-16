@@ -282,6 +282,10 @@ class Stage:
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
+        if not 0 <= value <= 65535:
+            raise ValueError(
+                f'Invalid speed setting: {value}. Speed setting must be between 0 and 65535.'
+            )
 
         command = f':{motor}s{value}'
         self._send_command(command)
@@ -293,6 +297,10 @@ class Stage:
         if not isinstance(value, int):
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if not 0 <= value <= 65535:
+            raise ValueError(
+                f'Invalid velocity setting: {value}. Velocity setting must be between 0 and 65535.'
             )
 
         command = f':{motor}v{value}'
@@ -405,7 +413,7 @@ class Stage:
             )
         if value not in self.VALID_ADDRESSES:
             raise ValueError(
-                f'Invalid address value: {value}. Valid address values are {sorted(list(self.VALID_ADDRESSES))}'
+                f'Invalid address value: {value}. Valid address values are {list(self.VALID_ADDRESSES)}'
             )
 
         command = f':{motor}D{value}'
