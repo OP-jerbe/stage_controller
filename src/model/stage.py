@@ -7,6 +7,7 @@ import serial
 class Stage:
     VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
     VALID_ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
+    VALID_BAUD_RATES = {9600, 19200, 38400, 57600, 115200}
     VALID_QUADRATURE_COUNTS = {
         192,
         276,
@@ -360,24 +361,35 @@ class Stage:
         command = f':{motor}A{value}'
         self._send_command(command)
 
-    def setBaud(self, motor: Literal[1, 2], baud: Literal[1, 2, 3, 4, 5]) -> None:
+    def setBaud(self, motor: Literal[1, 2], baud: int) -> None:
         """
         Set the baud rate for serial communication.
 
         Args:
             Motor (int): the motor to command (x-axis=1, y-axis=2)
-            baud (int): baud rate where: 1=9600, 2=19200, 3=38400, 4=57600, 5=115200
+            baud (int): baud rate (9600, 19200, 38400, 57600, 115200)
         """
 
         self._check_motor_input(motor)
         if not isinstance(baud, int):
             raise TypeError(f'Expected int for baud arg but got {type(baud).__name__}.')
-        if baud not in [1, 2, 3, 4, 5]:
-            raise ValueError(
-                f'Invalid baud setting: {baud}. Baud setting must be 1-5 where 1=9600, 2=19200, 3=38400, 4=57600, 5=115200'
-            )
+        match baud:
+            case 9600:
+                value = 1
+            case 19200:
+                value = 2
+            case 38400:
+                value = 3
+            case 57600:
+                value = 4
+            case 115200:
+                value = 5
+            case _:
+                raise ValueError(
+                    f'Invalid baud setting: {baud}. Valid baud settings: {sorted(list(self.VALID_BAUD_RATES))}'
+                )
 
-        command = f':{motor}B{baud}'
+        command = f':{motor}B{value}'
         self._send_command(command)
 
     def setDirection(self, motor: Literal[1, 2], direction: str) -> None:
