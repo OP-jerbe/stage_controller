@@ -10,6 +10,8 @@ class Stage:
         self._term_char = '\r'
         self.com_port = com_port
         self.serial_port: Optional[serial.Serial] = None
+        self.max_motor_pos = 2.147e9
+        self.min_motor_pos = -2.147e9
 
         if self.com_port:
             self.open_connection(self.com_port)
@@ -142,9 +144,9 @@ class Stage:
             raise ValueError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if -2.147e9 <= position <= -2.147e9:
+        if self.min_motor_pos <= position <= self.max_motor_pos:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between -2.147e9 and 2.147e9.'
+                f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
             )
         command = f':{motor}c{position}'
         self._send_command(command)
@@ -223,9 +225,9 @@ class Stage:
             raise ValueError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if -2.147e9 <= position <= -2.147e9:
+        if self.min_motor_pos <= position <= self.max_motor_pos:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between -2.147e9 and 2.147e9.'
+                f'Invalid position setting: {position}. Position setting must be between {self.min_motor_pos} and {self.max_motor_pos}.'
             )
 
         command = f':{motor}p{position}'
