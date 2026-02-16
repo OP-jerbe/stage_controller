@@ -403,3 +403,19 @@ class Stage:
 
         command = f':{motor}E{value}'
         self._send_command(command)
+
+    def setHoldingCurr(self, motor: Literal[1, 2], value: int) -> None:
+        """Set the holding current"""
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise ValueError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if not 0 <= value <= 31:
+            raise ValueError(
+                f'Invalid holding current value: {value}. Valid holding current is 0-31.'
+            )
+
+        command = f':{motor}H{value}'
+        self._send_command(command)
