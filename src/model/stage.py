@@ -125,7 +125,7 @@ class Stage:
                 f'Invalid accleration setting: {value}. Acceleration setting must be between 0 and 65535.'
             )
 
-        command = f':{motor}A{value}'
+        command = f':{motor}a{value}'
         self._send_command(command)
 
     def setHome(self, motor: Literal[1, 2], value: int) -> None:
@@ -145,3 +145,5 @@ class Stage:
             raise ValueError(
                 f'Invalid accleration setting: {value}. Acceleration setting must be between -2.147e9 and 2.147e9.'
             )
+        command = f':{motor}c{value}'
+        self._send_command(command)
