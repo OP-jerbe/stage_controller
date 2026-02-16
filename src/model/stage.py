@@ -112,7 +112,7 @@ class Stage:
     @staticmethod
     def _check_motor_input(value: Any) -> None:
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for motor arg but got {type(value).__name__}.'
             )
         if value not in (1, 2):
@@ -129,7 +129,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
         if not 0 <= value <= 65535:
@@ -145,7 +145,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(position, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
         if not self.min_motor_pos <= position <= self.max_motor_pos:
@@ -160,7 +160,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(set_point, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(set_point).__name__}.'
             )
         if set_point not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
@@ -174,7 +174,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
         if value not in (1, 2):
@@ -198,7 +198,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(steps, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for steps arg but got {type(steps).__name__}.'
             )
 
@@ -210,7 +210,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
         if value not in (1, 2):
@@ -226,7 +226,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
         if value not in (1, 2):
@@ -242,7 +242,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(position, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
         if not self.min_motor_pos <= position <= self.max_motor_pos:
@@ -258,7 +258,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
 
@@ -270,7 +270,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
 
@@ -282,9 +282,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(position, (int, float)):
-            raise ValueError(
-                f'Expected int or float but got {type(position).__name__}.'
-            )
+            raise TypeError(f'Expected int or float but got {type(position).__name__}.')
         if not 0 <= position <= 360.0:
             raise ValueError(
                 f'Invalid position setting: {position}. Position setting must be between 0 and 360.0 degrees.'
@@ -302,7 +300,9 @@ class Stage:
                 f'Expected int for set_point arg but got {type(set_point).__name__}.'
             )
         if set_point not in VALID_SET_POINTS:
-            raise ValueError(f'Invalid set point selection. Valid set points are {sorted(list(VALID_SET_POINTS))}.')
+            raise ValueError(
+                f'Invalid set point selection. Valid set points are {sorted(list(VALID_SET_POINTS))}.'
+            )
         if not isinstance(position, int):
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
@@ -320,7 +320,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
         if not 0 <= value <= 65535:
@@ -342,9 +342,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(baud, int):
-            raise ValueError(
-                f'Expected int for baud arg but got {type(baud).__name__}.'
-            )
+            raise TypeError(f'Expected int for baud arg but got {type(baud).__name__}.')
         if baud not in [1, 2, 3, 4, 5]:
             raise ValueError(
                 f'Invalid baud setting: {baud}. Baud setting must be 1-5 where 1=9600, 2=19200, 3=38400, 4=57600, 5=115200'
@@ -432,7 +430,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
         if not 0 <= value <= 31:
@@ -448,7 +446,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
 
@@ -460,7 +458,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
 
@@ -472,7 +470,7 @@ class Stage:
 
         self._check_motor_input(motor)
         if not isinstance(microsteps, int):
-            raise ValueError(
+            raise TypeError(
                 f'Expected int for microsteps arg but got {type(microsteps).__name__}'
             )
         if not 2 <= microsteps < 256:
