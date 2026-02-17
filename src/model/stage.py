@@ -680,7 +680,7 @@ class Stage:
                 'Invalid configuration mode. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
             )
 
-        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W'}
+        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W', 5: 'X', 6: 'Y'}
 
         command = f':{motor}{input_map[input]}{value}'
         self._send_command(command)
