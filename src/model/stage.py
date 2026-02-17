@@ -500,12 +500,16 @@ class Stage:
         self._send_command(command)
 
     def setInitLoadError(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the allowable error before hard stop is detected"""
+        """Set the allowable error before hard stop is detected when homing the motor."""
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if not 1 <= value <= 65535:
+            raise ValueError(
+                f'Invalid value for Initializing Load Error: {value}. Valid values are 1-65535.'
             )
 
         command = f':{motor}I{value}'
