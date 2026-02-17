@@ -684,3 +684,25 @@ class Stage:
 
         command = f':{motor}{input_map[input]}{value}'
         self._send_command(command)
+
+    def setIdxConfig(self, motor: Literal[1, 2], value: int) -> None:
+        """
+        Set the index configuration mode
+
+        Args:
+            motor (int): the motor to command
+            value (int): config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if value not in {0, 1, 2, 3}:
+            raise ValueError(
+                'Invalid configuration mode. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
+            )
+
+        command = f':{motor}Z{value}'
+        self._send_command(command)
