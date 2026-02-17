@@ -30,13 +30,20 @@ class Stage:
     }
 
     def __init__(
-        self, com_port: Optional[str] = None, motor_max_current: float = 0.62
+        self,
+        com_port: Optional[str] = None,
+        motor_max_current: float = 0.62,
+        low_current_range: bool = True,
     ) -> None:
         self._lock = Lock()
         self._term_char = '\r'
         self.com_port = com_port
         self.serial_port: Optional[serial.Serial] = None
         self.motor_max_current = motor_max_current  # AMPS
+        self.low_current_range = low_current_range
+
+        if low_current_range:
+            self.CONTROLLER_MAX_CURRENT_RATING = 1.0
 
         if self.com_port:
             self.open_connection(self.com_port)
@@ -463,7 +470,8 @@ class Stage:
     def setHoldingCurr(self, motor: Literal[1, 2], amps: float) -> None:
         """
         Set the holding current in Amperes.
-        The hardware uses a 0-31 scale where 31 = 2.0A.
+        The hardware uses a 0-31 scale where 31 = 1.0A for low current scale (default)
+        or 31 = 2.0A for high current scale.
         """
 
         self._check_motor_input(motor)
@@ -480,8 +488,8 @@ class Stage:
             )
 
         hw_max_value = 31
-        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 2/31=0.0645
-        motor_max_value = int(self.motor_max_current / amps_per_step)  # 9
+        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 1 / 31
+        motor_max_value = int(self.motor_max_current / amps_per_step)  # 19
 
         value = round(amps / amps_per_step)
 
