@@ -515,6 +515,42 @@ class Stage:
         command = f':{motor}I{value}'
         self._send_command(command)
 
+    def setOut1Config(self, motor: Literal[1, 2], value: Literal[0, 1, 2, 3]) -> None:
+        """
+        Set Output 1 Configuration mode.
+
+        Args:
+            motor (int): The motor to command
+            value (int): 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
+        """
+
+        self._check_motor_input(motor)
+        if value not in {0, 1, 2, 3}:
+            raise ValueError(
+                'Invalid configuration mode. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
+            )
+
+        command = f':{motor}J{value}'
+        self._send_command(command)
+
+    def setOut2Config(self, motor: Literal[1, 2], value: Literal[0, 1, 2, 3]) -> None:
+        """
+        Set Output 2 Configuration mode.
+
+        Args:
+            motor (int): The motor to command
+            value (int): 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
+        """
+
+        self._check_motor_input(motor)
+        if value not in {0, 1, 2, 3}:
+            raise ValueError(
+                'Invalid configuration mode. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
+            )
+
+        command = f':{motor}K{value}'
+        self._send_command(command)
+
     def setLoadError(self, motor: Literal[1, 2], value: int) -> None:
         """Set the allowable following error before faulting"""
 
