@@ -600,3 +600,35 @@ class Stage:
 
         command = f':{motor}O{value}'
         self._send_command(command)
+
+    def setRunCurr(self, motor: Literal[1, 2], amps: int) -> None:
+        """
+        Set the run current in Amperes.
+        The hardware uses a 0-31 scale where 31 = 1.0A for low current scale (default)
+        or 31 = 2.0A for high current scale.
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(amps, (int, float)):
+            raise TypeError(
+                f'Expected int or float for amps but got {type(amps).__name__}.'
+            )
+        if amps < 0:
+            raise ValueError(f'Current cannot be negative (got {amps}A).')
+        if amps > self.motor_max_current:
+            raise ValueError(
+                f'Current {amps}A exceeds safe limit for this motor ({self.motor_max_current}A). '
+                f'Higher current may cause overheating or winding damage.'
+            )
+
+        hw_max_value = 31
+        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 1 / 31
+        motor_max_value = int(self.motor_max_current / amps_per_step)  # 19
+
+        value = round(amps / amps_per_step)
+
+        # Final hardware clamp just in case of rounding edge-cases
+        value = max(0, min(value, motor_max_value, hw_max_value))
+
+        command = f':{motor}R{value}'
+        self._send_command(command)
