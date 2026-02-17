@@ -696,3 +696,15 @@ class Stage:
 
         command = f':{motor}Z{value}'
         self._send_command(command)
+
+    ###################################################################################
+    ################################# Get Requests ####################################
+    ###################################################################################
+
+    def getAccel(self, motor: Literal[1, 2]) -> int:
+        """Gets the acceleration setting"""
+
+        self._check_motor_input(motor)
+        command = f':{motor}a'
+        response = self._send_query(command)
+        return int(response.replace(command, ''))
