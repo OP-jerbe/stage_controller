@@ -578,3 +578,25 @@ class Stage:
 
         command = f':{motor}M{microsteps}'
         self._send_command(command)
+
+    def setCurrentRange(self, motor: Literal[1, 2], value: Literal[0, 1]) -> None:
+        """
+        Set the current range to high (2.0 A) or low (1.0 A)
+
+        Args:
+            motor (int): the motor to command
+            value (int): 0=high=2.0A, 1=low=1.0A
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if value not in {0, 1}:
+            raise ValueError(
+                f'Invalid range value: {value}. Valid range values are 0 (high range = 2.0A) or 1 (low range = 1.0A)'
+            )
+
+        command = f':{motor}O{value}'
+        self._send_command(command)
