@@ -454,6 +454,12 @@ class Stage:
         command = f':{motor}E{value}'
         self._send_command(command)
 
+    def setZero(self, motor: Literal[1, 2]) -> None:
+        """Sets the motor's zero position"""
+        self._check_motor_input(motor)
+        command = f':{motor}F'
+        self._send_command(command)
+
     def setHoldingCurr(self, motor: Literal[1, 2], amps: float) -> None:
         """
         Set the holding current in Amperes.
