@@ -702,9 +702,17 @@ class Stage:
     ###################################################################################
 
     def getAccel(self, motor: Literal[1, 2]) -> int:
-        """Gets the acceleration setting"""
+        """Get the acceleration setting"""
 
         self._check_motor_input(motor)
         command = f':{motor}a'
+        response = self._send_query(command)
+        return int(response.replace(command, ''))
+
+    def getFollowingError(self, motor: Literal[1, 2]) -> int:
+        """Get the Following Error expressed as micro-steps relative to the encoder count (ratio)"""
+
+        self._check_motor_input(motor)
+        command = f':{motor}b'
         response = self._send_query(command)
         return int(response.replace(command, ''))
