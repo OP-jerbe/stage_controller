@@ -648,3 +648,39 @@ class Stage:
 
         command = f':{motor}S{value}'
         self._send_command(command)
+
+    def setInputConfig(
+        self,
+        motor: Literal[1, 2],
+        input: Literal[1, 2, 3, 4],
+        value: Literal[0, 1, 2, 3],
+    ) -> None:
+        """
+        Set an input configuration mode.
+
+        Args:
+            motor (int): motor to command
+            input (int): input to configure (1, 2, 3, or 4)
+            value (int): config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(input, int):
+            raise TypeError(
+                f'Expected int for input arg but got {type(input).__name__}.'
+            )
+        if input not in {1, 2, 3, 4}:
+            raise ValueError('Invalid input selection. Valid inputs are 1, 2, 3, or 4.')
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if value not in {0, 1, 2, 3}:
+            raise ValueError(
+                'Invalid configuration mode. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
+            )
+
+        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W'}
+
+        command = f':{motor}{input_map[input]}{value}'
+        self._send_command(command)
