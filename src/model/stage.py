@@ -716,3 +716,12 @@ class Stage:
         command = f':{motor}b'
         response = self._send_query(command)
         return int(response.replace(command, ''))
+
+    def getStatus(self, motor: Literal[1, 2]) -> str:
+        """Get the (1) system status and (2) current active Set Point."""
+        # TODO: check the response of getStatus and format the return value appropriately
+
+        self._check_motor_input(motor)
+        command = f':{motor}f'
+        response = self._send_query(command)
+        return response.replace(command, '')
