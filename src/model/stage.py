@@ -727,7 +727,21 @@ class Stage:
         return response.replace(command, '')
 
     def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
-        """Get the motor status"""
+        """
+        Get the motor status
+
+        Args:
+            motor (int): the motor to command
+
+        Returns:
+            list(int): [x, y] where:
+                x=1=Motor Running, x=2=Motor Stopped
+                y=Motor Status:
+                    0=Motor Ready
+                    1=Motor Not Homed
+                    2=Motor Not Initialized
+                    3=Motor Error
+        """
 
         self._check_motor_input(motor)
         command = f':{motor}g'
