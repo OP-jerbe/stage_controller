@@ -856,3 +856,19 @@ class Stage:
         command = f':{motor}u'
         response = self._send_query(command).replace(command, '')
         return int(response) / 100.0
+
+    def getGlobalVelocity(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the global max velocity in steps/sec
+
+        Args:
+            motor (int): the motor to command
+
+        Returns:
+            int: the global max velocity in steps/sec
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}v'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
