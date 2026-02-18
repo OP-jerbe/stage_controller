@@ -978,3 +978,20 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         baud_map = {'1': 9600, '2': 19200, '3': 38400, '4': 57600, '5': 115200}
         return baud_map[response]
+
+    def getDirection(self, motor: Literal[1, 2]) -> str:
+        """
+        Get the direction setting of the motor (CW or CCW)
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            str: the direction setting of the motor, "CW" or "CCW"
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}C'
+        response = self._send_query(command).replace(command, '')
+        direction_map = {'0': 'CCW', '1': 'CW'}
+        return direction_map[response]
