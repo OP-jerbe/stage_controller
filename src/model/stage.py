@@ -643,10 +643,10 @@ class Stage:
         command = f':{motor}S{value}'
         self._send_command(command)
 
-    def setInputConfig(
+    def setInputXConfig(
         self,
         motor: Literal[1, 2],
-        input: Literal[1, 2, 3, 4],
+        input: Literal[1, 2, 3, 4, 5, 6],
         value: Literal[0, 1, 2, 3],
     ) -> None:
         """
@@ -663,7 +663,7 @@ class Stage:
             raise TypeError(
                 f'Expected int for input arg but got {type(input).__name__}.'
             )
-        if input not in {1, 2, 3, 4}:
+        if input not in {1, 2, 3, 4, 5, 6}:
             raise ValueError('Invalid input selection. Valid inputs are 1, 2, 3, or 4.')
         if not isinstance(value, int):
             raise TypeError(
@@ -1153,3 +1153,32 @@ class Stage:
 
         amps = value * self.amps_per_step
         return round(amps, 3)
+
+    def getInputXConfig(
+        self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4, 5, 6]
+    ) -> int:
+        """
+        Get an input configuration setting
+
+        Args:
+            motor (int): the motor to query
+            input (int): the input to query
+
+        Returns:
+            int: config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(input, int):
+            raise TypeError(
+                f'Expected int for input arg but got {type(input).__name__}.'
+            )
+        if input not in {1, 2, 3, 4, 5, 6}:
+            raise ValueError(
+                f'Invalid input selection: {input}. Valid inputs are [1, 2, 3, 4]'
+            )
+
+        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W', 5: 'X', 6: 'Y'}
+        command = f':{motor}{input_map[input]}'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
