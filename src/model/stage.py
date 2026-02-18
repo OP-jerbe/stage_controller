@@ -1023,13 +1023,10 @@ class Stage:
         direction_map = {'0': 'CCW', '1': 'CW'}
         return direction_map[response]
 
-    def getAddress(self, motor: Literal[1, 2]) -> str:
-        """Get the address of the motor"""
+    def getAddresses(self) -> str:
+        """Get the addresses of the motors"""
 
-        # TODO: understand what gets returned from this command
-
-        self._check_motor_input(motor)
-        command = f':{motor}D'
+        command = ':0D'
         return self._send_query(command).replace(command, '')
 
     def getEncoderCPR(self, motor: Literal[1, 2]) -> int:
