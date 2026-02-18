@@ -1042,3 +1042,19 @@ class Stage:
 
         amps = value * amps_per_step
         return round(amps, 3)
+
+    def getInitLoadError(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the allowable error setting before hard stop in detected
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: the error setting
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}I'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
