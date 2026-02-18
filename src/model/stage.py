@@ -735,6 +735,8 @@ class Stage:
     def getStatus(self, motor: Literal[1, 2]) -> str:
         """Get the (1) system status and (2) current active Set Point."""
         # TODO: check the response of getStatus and format the return value appropriately
+        # response = ':1f0\x000'
+        # response.replace(command, '') = '0\x000' even when motor 1 was sent to setpoint 1
 
         self._check_motor_input(motor)
         command = f':{motor}f'
