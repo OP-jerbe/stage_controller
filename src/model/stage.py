@@ -491,14 +491,12 @@ class Stage:
                 f'Higher current may cause overheating or winding damage.'
             )
 
-        hw_max_value = 31
-        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 1 / 31
-        motor_max_value = int(self.motor_max_current / amps_per_step)  # 19
+        motor_max_value = int(self.motor_max_current / self.amps_per_step)  # 19
 
-        value = round(amps / amps_per_step)
+        value = round(amps / self.amps_per_step)
 
         # Final hardware clamp just in case of rounding edge-cases
-        value = max(0, min(value, motor_max_value, hw_max_value))
+        value = max(0, min(value, motor_max_value, self.CONTROLLER_MAX_CURRENT_VALUE))
 
         command = f':{motor}H{value}'
         self._send_command(command)
@@ -615,14 +613,12 @@ class Stage:
                 f'Higher current may cause overheating or winding damage.'
             )
 
-        hw_max_value = 31
-        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 1 / 31
-        motor_max_value = int(self.motor_max_current / amps_per_step)  # 19
+        motor_max_value = int(self.motor_max_current / self.amps_per_step)  # 19
 
-        value = round(amps / amps_per_step)
+        value = round(amps / self.amps_per_step)
 
         # Final hardware clamp just in case of rounding edge-cases
-        value = max(0, min(value, motor_max_value, hw_max_value))
+        value = max(0, min(value, motor_max_value, self.CONTROLLER_MAX_CURRENT_VALUE))
 
         command = f':{motor}R{value}'
         self._send_command(command)
