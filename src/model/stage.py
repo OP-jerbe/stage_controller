@@ -872,3 +872,19 @@ class Stage:
         command = f':{motor}v'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getAbsPosition(self, motor: Literal[1, 2]) -> float:
+        """
+        Get the absolute position of the motor in degrees.
+
+        Args:
+            motor (int): the motor to command
+
+        Returns:
+            int: the absolute position of the motor in degrees (0-360.0)
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}x'
+        response = self._send_query(command).replace(command, '')
+        return int(response) / 10.0
