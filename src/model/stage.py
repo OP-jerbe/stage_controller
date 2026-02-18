@@ -881,7 +881,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response) / 100.0
 
-    def getGlobalVelocity(self, motor: Literal[1, 2]) -> int:
+    def getGlobalVelocity(self, motor: Literal[0, 1, 2]) -> int:
         """
         Get the global max velocity in steps/sec
 
@@ -966,7 +966,7 @@ class Stage:
         response = self._send_query(command)
         return int(response)
 
-    def getNVAccel(self, motor: Literal[1, 2]) -> int:
+    def getNVAccel(self, motor: Literal[0, 1, 2]) -> int:
         """
         Get the non-volitile memory acceleration setting in steps/sec-sq
 
@@ -982,7 +982,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getBaud(self, motor: Literal[1, 2]) -> int | None:
+    def getBaud(self, motor: Literal[0, 1, 2]) -> int | None:
         """
         Get the baud rate for serial communication
 
@@ -1139,7 +1139,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getCurrentRange(self, motor: Literal[1, 2]) -> int:
+    def getCurrentRange(self, motor: Literal[0, 1, 2]) -> int:
         """
         Get the current range setting.
 
