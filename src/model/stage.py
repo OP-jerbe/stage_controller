@@ -1174,6 +1174,21 @@ class Stage:
         amps = value * self.amps_per_step
         return round(amps, 3)
 
+    def getNVSpeed(self, motor: Literal[0, 1, 2]) -> int:
+        """
+        Get the non-volitile memory speed setting
+
+        Args:
+            motor (int): the motor to command
+
+        Returns:
+            int: the speed setting in steps/sec from non-volitile memory.
+        """
+
+        command = f':{motor}S'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
     def getInputXConfig(
         self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4, 5, 6]
     ) -> int:
