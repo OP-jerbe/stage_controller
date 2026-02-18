@@ -747,3 +747,21 @@ class Stage:
         command = f':{motor}g'
         response = self._send_query(command).replace(command, '')
         return [int(char) for char in response]
+
+    def getInitEnable(self, motor: Literal[1, 2]) -> list[int]:
+        """
+        Get status of all inputs 4 + index
+
+        Args:
+            motor (int): motor to command
+
+        Returns:
+            list(int): [u, v, x, y, z] where:
+                1=High
+                0=Low
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}l'
+        response = self._send_query(command).replace(command, '')
+        return [int(char) for char in response]
