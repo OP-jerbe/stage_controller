@@ -961,3 +961,20 @@ class Stage:
         command = f':{motor}A'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getBaud(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the baud rate for serial communication
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: the baud rate
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}B'
+        response = self._send_query(command).replace(command, '')
+        baud_map = {'1': 9600, '2': 19200, '3': 38400, '4': 57600, '5': 115200}
+        return baud_map[response]
