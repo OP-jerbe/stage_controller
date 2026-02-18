@@ -824,3 +824,19 @@ class Stage:
         command = f':{motor}p'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getCurrentSpeed(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the current speed of the motor in steps/sec
+
+        Args:
+            motor (int): the motor to command
+
+        Returns:
+            int: the current speed of the motor in steps/sec
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}s'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
