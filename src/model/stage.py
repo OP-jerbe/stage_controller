@@ -1094,7 +1094,7 @@ class Stage:
 
         self._check_motor_input(motor)
         command = f':{motor}L'
-        response = self._send_query(command)
+        response = self._send_query(command).replace(command, '')
         return int(response)
 
     def getMStepsPerStep(self, motor: Literal[1, 2]) -> int:
