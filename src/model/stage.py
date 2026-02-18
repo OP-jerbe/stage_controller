@@ -919,3 +919,29 @@ class Stage:
         self._check_motor_input(motor)
         command = f':{motor}z'
         return self._send_query(command).replace(command, '')
+
+    def getSetPointPos(self, motor: Literal[1, 2], set_point: int) -> int:
+        """
+        Get a set point's assigned position
+
+        Args:
+            motor (int): the motor to query
+            set_point (int): the set point to query
+
+        Returns:
+            int: the position assigned to the given set point
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(set_point, int):
+            raise TypeError(
+                f'Expected int for set_point arg but got {type(set_point).__name__}.'
+            )
+        if set_point not in self.VALID_SET_POINTS:
+            raise ValueError(
+                f'Invalid set point selection {set_point}. Valid set points are {sorted(list(self.VALID_SET_POINTS))}'
+            )
+
+        command = f':{motor}{set_point}'
+        response = self._send_query(command)
+        return int(response)
