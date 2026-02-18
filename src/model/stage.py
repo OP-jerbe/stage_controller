@@ -515,7 +515,7 @@ class Stage:
         command = f':{motor}I{value}'
         self._send_command(command)
 
-    def setOutConfig(
+    def setOutXConfig(
         self, motor: Literal[1, 2], input: Literal[1, 2], value: Literal[0, 1, 2, 3]
     ) -> None:
         """
@@ -1056,5 +1056,32 @@ class Stage:
 
         self._check_motor_input(motor)
         command = f':{motor}I'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    def getOutXConfig(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
+        """
+        Get an output configuration setting.
+
+        Args:
+            motor (int): the motor to query
+            ouput (int): the output to query (1 or 2)
+
+        Returns:
+            int: the output setting where, 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(output, int):
+            raise TypeError(
+                f'Expected int for output arg but got {type(output).__name__}.'
+            )
+        if output not in {1, 2}:
+            raise ValueError(
+                f'Invalid output selection: {output}. Valid outputs are 1 or 2.'
+            )
+
+        output_map = {1: 'J', 2: 'K'}
+        command = f':{motor}{output_map[output]}'
         response = self._send_query(command).replace(command, '')
         return int(response)
