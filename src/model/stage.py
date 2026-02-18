@@ -240,36 +240,36 @@ class Stage:
         command = f':{motor}j{steps}'
         self._send_command(command)
 
-    def setOutput2(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
-        """Set the output2 state. value=1=On. value=2=Off"""
+    def setOutputX(
+        self, motor: Literal[1, 2], output: Literal[1, 2], state: Literal[0, 1]
+    ) -> None:
+        """
+        Force an output state On or Off.
+
+        Args:
+            motor (int): the motor to command
+            output (int): the output to set
+            state (int): the state of the output
+        """
 
         self._check_motor_input(motor)
-        if not isinstance(value, int):
+        if not isinstance(output, int):
             raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
+                f'Expected int for output arg but got {type(output).__name__}.'
             )
-        if value not in (1, 2):
+        if output not in {1, 2}:
             raise ValueError(
-                f'Invalid value selection: {motor}. Value selection must be 1 or 2.'
+                f'Invalid output selection: {output}. Value selection must be 1 or 2.'
             )
-
-        command = f':{motor}n{value}'
-        self._send_command(command)
-
-    def setOutput1(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
-        """Set the output1 state. value=1=On. value=2=Off"""
-
-        self._check_motor_input(motor)
-        if not isinstance(value, int):
+        if not isinstance(state, int):
             raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
+                f'Expected int for state arg but got {type(state).__name__}.'
             )
-        if value not in (1, 2):
-            raise ValueError(
-                f'Invalid value selection: {motor}. Value selection must be 1 or 2.'
-            )
+        if state not in {0, 1}:
+            raise ValueError(f'Invalid state: {state}. Valid states are 0=Off or 1=On')
 
-        command = f':{motor}o{value}'
+        output_map = {1: 'o', 2: 'n'}
+        command = f':{motor}{output_map[output]}{state}'
         self._send_command(command)
 
     def goToPos(self, motor: Literal[1, 2], position: int) -> None:
