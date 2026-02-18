@@ -1085,3 +1085,19 @@ class Stage:
         command = f':{motor}{output_map[output]}'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getLoadError(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the allowable following error before faulting setting
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: the allowable following error setting
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}L'
+        response = self._send_query(command)
+        return int(response)
