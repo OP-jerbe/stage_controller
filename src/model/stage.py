@@ -1101,3 +1101,19 @@ class Stage:
         command = f':{motor}L'
         response = self._send_query(command)
         return int(response)
+
+    def getMStepsPerStep(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the number of micro-steps per step setting
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: the number of micro-steps per step
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}M'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
