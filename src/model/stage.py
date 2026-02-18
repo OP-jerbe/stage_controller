@@ -929,19 +929,15 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getSoftwareRev(self, motor: Literal[1, 2]) -> str:
+    def getSoftwareRev(self) -> str:
         """
         Get the series revision date
-
-        Args:
-            motor (int): the motor to query
 
         Returns:
             str: 'xyz' = Series Revision-Date
         """
 
-        self._check_motor_input(motor)
-        command = f':{motor}z'
+        command = ':0z'
         return self._send_query(command).replace(command, '')
 
     def getSetPointPos(self, motor: Literal[1, 2], set_point: int) -> int:
