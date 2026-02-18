@@ -765,3 +765,30 @@ class Stage:
         command = f':{motor}l'
         response = self._send_query(command).replace(command, '')
         return [int(char) for char in response]
+
+    def getOutputStatus(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
+        """
+        Get status of an output signal
+
+        Args:
+            motor (int): the motor to command
+            output (int): the output to read
+
+        Returns:
+            int: status of the output signal where 1=On and 0=Off.
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(output, int):
+            raise TypeError(
+                f'Expected int for output arg but got {type(output).__name__}.'
+            )
+        if output not in {1, 2}:
+            raise ValueError(
+                f'Invalid output selection: {output}. Valid outputs are 1 or 2.'
+            )
+
+        output_map = {1: 'n', 2: 'o'}
+        command = f':{motor}{output_map[output]}'
+        response = self._send_query(command)
+        return int(response.replace(command, ''))
