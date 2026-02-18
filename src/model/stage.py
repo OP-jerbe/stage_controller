@@ -948,13 +948,13 @@ class Stage:
 
     def getNVAccel(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volitile memory acceleration setting
+        Get the non-volitile memory acceleration setting in steps/sec-sq
 
         Args:
             motor (int): the motor to query
 
         Returns:
-            int: the non-volitile acceleration setting
+            int: the non-volitile acceleration setting in steps/sec-sq
         """
 
         self._check_motor_input(motor)
