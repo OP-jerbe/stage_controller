@@ -995,3 +995,12 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         direction_map = {'0': 'CCW', '1': 'CW'}
         return direction_map[response]
+
+    def getAddress(self, motor: Literal[1, 2]) -> str:
+        """Get the address of the motor"""
+
+        # TODO: understand what gets returned from this command
+
+        self._check_motor_input(motor)
+        command = f':{motor}D'
+        return self._send_query(command).replace(command, '')
