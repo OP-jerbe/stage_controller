@@ -982,7 +982,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getBaud(self, motor: Literal[1, 2]) -> int:
+    def getBaud(self, motor: Literal[1, 2]) -> int | None:
         """
         Get the baud rate for serial communication
 
@@ -996,7 +996,14 @@ class Stage:
         self._check_motor_input(motor)
         command = f':{motor}B'
         response = self._send_query(command).replace(command, '')
-        baud_map = {'1': 9600, '2': 19200, '3': 38400, '4': 57600, '5': 115200}
+        baud_map = {
+            '0': None,
+            '1': 9600,
+            '2': 19200,
+            '3': 38400,
+            '4': 57600,
+            '5': 115200,
+        }
         return baud_map[response]
 
     def getDirection(self, motor: Literal[1, 2]) -> str:
