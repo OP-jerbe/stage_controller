@@ -1004,3 +1004,19 @@ class Stage:
         self._check_motor_input(motor)
         command = f':{motor}D'
         return self._send_query(command).replace(command, '')
+
+    def getEncoderCPR(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the encoder counts-per-revolution setting
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: the encoder counts-per-revolution setting
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}E'
+        response = self._send_query(command)
+        return int(response)
