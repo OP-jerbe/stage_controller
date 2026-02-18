@@ -1182,3 +1182,18 @@ class Stage:
         command = f':{motor}{input_map[input]}'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getIdxConfig(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the index configuration parameter
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+        """
+
+        command = f':{motor}Z'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
