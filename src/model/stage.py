@@ -7,6 +7,7 @@ import serial
 class Stage:
     MOTOR_POSITION_RANGE = (-2.147e9, 2.147e9)
     CONTROLLER_MAX_CURRENT_RATING = 2.0  # AMPS
+    CONTROLLER_MAX_CURRENT_VALUE = 31
     VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
     VALID_ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
     VALID_BAUD_RATES = {9600, 19200, 38400, 57600, 115200}
@@ -40,10 +41,13 @@ class Stage:
         self.com_port = com_port
         self.serial_port: Optional[serial.Serial] = None
         self.motor_max_current = motor_max_current  # AMPS
-        self.low_current_range = low_current_range
 
         if low_current_range:
             self.CONTROLLER_MAX_CURRENT_RATING = 1.0
+
+        self.amps_per_step = (
+            self.CONTROLLER_MAX_CURRENT_RATING / self.CONTROLLER_MAX_CURRENT_VALUE
+        )
 
         if self.com_port:
             self.open_connection(self.com_port)
@@ -1037,10 +1041,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         value = int(response)
 
-        hw_max_value = 31
-        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 1 / 31
-
-        amps = value * amps_per_step
+        amps = value * self.amps_per_step
         return round(amps, 3)
 
     def getInitLoadError(self, motor: Literal[1, 2]) -> int:
@@ -1133,3 +1134,22 @@ class Stage:
         command = f':{motor}O'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getRunCurr(self, motor: Literal[1, 2]) -> float:
+        """
+        Get the run current setting.
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            float: the run current setting in amps
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}R'
+        response = self._send_query(command).replace(command, '')
+        value = int(response)
+
+        amps = value * self.amps_per_step
+        return round(amps, 3)
