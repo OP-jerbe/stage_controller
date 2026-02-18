@@ -792,3 +792,19 @@ class Stage:
         command = f':{motor}{output_map[output]}'
         response = self._send_query(command)
         return int(response.replace(command, ''))
+
+    def getPosition(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the position of a motor
+
+        Args:
+            motor (int): motor to command
+
+        Returns:
+            int: the position of the motor
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}p'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
