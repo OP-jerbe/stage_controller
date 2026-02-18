@@ -1169,7 +1169,7 @@ class Stage:
             )
         if input not in {1, 2, 3, 4, 5, 6}:
             raise ValueError(
-                f'Invalid input selection: {input}. Valid inputs are [1, 2, 3, 4]'
+                f'Invalid input selection: {input}. Valid inputs are [1, 2, 3, 4, 5, 6]'
             )
 
         input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W', 5: 'X', 6: 'Y'}
