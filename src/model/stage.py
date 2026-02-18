@@ -840,3 +840,19 @@ class Stage:
         command = f':{motor}s'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getRPM(self, motor: Literal[1, 2]) -> float:
+        """
+        Get the RPM of a motor. (xxxx = XX.XX)
+
+        Args:
+            motor (int): the motor to command
+
+        Returns:
+            float: the motor RPM
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}u'
+        response = self._send_query(command).replace(command, '')
+        return int(response) / 100.0
