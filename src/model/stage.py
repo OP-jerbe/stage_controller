@@ -123,6 +123,7 @@ class Stage:
                 self.ser.reset_input_buffer()
                 self.ser.write(query.encode('ascii'))
                 response = self._readline()
+                print(f'{response = }')
             except Exception as e:
                 print(f'Unexpected Error sending query: {e}')
                 raise
