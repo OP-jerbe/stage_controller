@@ -39,7 +39,7 @@ class Stage:
         self._lock = Lock()
         self._term_char = '\r'
         self.com_port = com_port
-        self.serial_port: Optional[serial.Serial] = None
+        self.ser: Optional[serial.Serial] = None
         self.motor_max_current = motor_max_current  # AMPS
 
         if low_current_range:
@@ -53,7 +53,7 @@ class Stage:
             self.open_connection(self.com_port)
 
     def open_connection(
-        self, port: str, baudrate: int = 9600, timeout: float = 1.0
+        self, port: str, baudrate: int = 38400, timeout: float = 1.0
     ) -> None:
         """
         Establishes a serial connection to the instrument at the specified COM port.
@@ -65,7 +65,7 @@ class Stage:
             timeout (float): The read and write timeout in seconds. Defaults to 1.0.
         """
         try:
-            self.serial_port = serial.Serial(
+            self.ser = serial.Serial(
                 port=port.upper(),
                 baudrate=baudrate,
                 timeout=timeout,
@@ -74,7 +74,7 @@ class Stage:
 
         except Exception as e:
             print(f'Failed to make a serial connection to {port}.\n\n{str(e)}')
-            self.serial_port = None
+            self.ser = None
 
     def _send_command(self, command: str) -> None:
         """
@@ -84,7 +84,7 @@ class Stage:
             command (str): The command string to send to the instrument.
                 The carriage return termination character is appended automatically.
         """
-        if not self.serial_port or not self.serial_port.is_open:
+        if not self.ser or not self.ser.is_open:
             raise RuntimeError(
                 'Attempted to communicate with stage, but no instrument is connected.'
             )
@@ -94,7 +94,7 @@ class Stage:
 
         with self._lock:
             try:
-                self.serial_port.write(command.encode('utf-8'))
+                self.ser.write(command.encode('ascii'))
             except Exception as e:
                 raise ConnectionError(f'Serial Communication Error\n\n{str(e)}')
 
@@ -111,7 +111,7 @@ class Stage:
         Returns:
             str: The decoded and stripped string response received from the instrument.
         """
-        if not self.serial_port or not self.serial_port.is_open:
+        if not self.ser or not self.ser.is_open:
             raise RuntimeError(
                 'Attempted to communicate with stage, but no instrument is connected.'
             )
@@ -120,8 +120,8 @@ class Stage:
 
         with self._lock:
             try:
-                self.serial_port.reset_input_buffer()
-                self.serial_port.write(query.encode('utf-8'))
+                self.ser.reset_input_buffer()
+                self.ser.write(query.encode('ascii'))
                 response = self._readline()
             except Exception as e:
                 print(f'Unexpected Error sending query: {e}')
@@ -136,13 +136,11 @@ class Stage:
         Returns:
             str: The decoded and stripped line of response data.
         """
-        if not self.serial_port:
+        if not self.ser:
             raise RuntimeError('No serial port connection.')
 
         return (
-            self.serial_port.read_until(self._term_char.encode('utf-8'))
-            .decode('utf-8')
-            .strip()
+            self.ser.read_until(self._term_char.encode('ascii')).decode('ascii').strip()
         )
 
     @staticmethod
