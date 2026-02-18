@@ -1018,5 +1018,27 @@ class Stage:
 
         self._check_motor_input(motor)
         command = f':{motor}E'
-        response = self._send_query(command)
+        response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getHoldingCurr(self, motor: Literal[1, 2]) -> float:
+        """
+        Get the holding current setting
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            float: the holding current setting in amps
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}H'
+        response = self._send_query(command).replace(command, '')
+        value = int(response)
+
+        hw_max_value = 31
+        amps_per_step = self.CONTROLLER_MAX_CURRENT_RATING / hw_max_value  # 1 / 31
+
+        amps = value * amps_per_step
+        return round(amps, 3)
