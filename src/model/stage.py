@@ -881,10 +881,26 @@ class Stage:
             motor (int): the motor to command
 
         Returns:
-            int: the absolute position of the motor in degrees (0-360.0)
+            float: the absolute position of the motor in degrees (0-360.0)
         """
 
         self._check_motor_input(motor)
         command = f':{motor}x'
         response = self._send_query(command).replace(command, '')
         return int(response) / 10.0
+
+    def getEncoderPosition(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the encoder counts (can be negative)
+
+        Args:
+            motor (int): the motor to command
+
+        Returns:
+            int: the encoder counts
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}y'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
