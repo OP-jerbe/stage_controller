@@ -1117,3 +1117,19 @@ class Stage:
         command = f':{motor}M'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getCurrentRange(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the current range setting.
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: the current range setting (0=high=2.0A, 1=low=1.0A)
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}O'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
