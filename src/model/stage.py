@@ -945,3 +945,19 @@ class Stage:
         command = f':{motor}{set_point}'
         response = self._send_query(command)
         return int(response)
+
+    def getNVAccel(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the non-volitile memory acceleration setting
+
+        Args:
+            motor (int): the motor to query
+
+        Returns:
+            int: the non-volitile acceleration setting
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}A'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
