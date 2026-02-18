@@ -725,3 +725,11 @@ class Stage:
         command = f':{motor}f'
         response = self._send_query(command)
         return response.replace(command, '')
+
+    def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
+        """Get the motor status"""
+
+        self._check_motor_input(motor)
+        command = f':{motor}g'
+        response = self._send_query(command).replace(command, '')
+        return [int(char) for char in response]
