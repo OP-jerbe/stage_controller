@@ -334,7 +334,14 @@ class Stage:
         command = f':{motor}x{position}'
         self._send_command(command)
 
-    def setSetPoint(self, motor: Literal[1, 2], set_point: int, position: int) -> None:
+    def setSetPoint(
+        self,
+        motor: Literal[1, 2],
+        set_point: int,
+        position: int,
+        velocity: int,
+        acceleration: int,
+    ) -> None:
         """Set a set point position. Valid set points are 0-9"""
 
         self._check_motor_input(motor)
@@ -354,8 +361,24 @@ class Stage:
             raise ValueError(
                 f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
             )
+        if not isinstance(velocity, int):
+            raise TypeError(
+                f'Expected int for velocity but got {type(velocity).__name__}.'
+            )
+        if not 0 <= velocity <= 65535:
+            raise ValueError(
+                f'Invalid velocity setting: {velocity}. Valid velocity range is 0-65535'
+            )
+        if not isinstance(acceleration, int):
+            raise TypeError(
+                f'Expected int for acceleration but got {type(acceleration).__name__}.'
+            )
+        if not 0 <= acceleration <= 65535:
+            raise ValueError(
+                f'Invalid acceleration setting: {acceleration}. Valid acceleration range is 0-65535'
+            )
 
-        command = f':{motor}{set_point}{position}'
+        command = f':{motor}{set_point}{position},{velocity},{acceleration}'
         self._send_command(command)
 
     def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
