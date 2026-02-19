@@ -883,7 +883,7 @@ class Stage:
             return float('nan')
         return int(response) / 100.0
 
-    def getGlobalVelocity(self, motor: Literal[0, 1, 2]) -> int:
+    def getGlobalVelocity(self, motor: Literal[1, 2]) -> int:
         """
         Get the global max velocity in steps/sec
 
@@ -1141,7 +1141,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getCurrRange(self, motor: Literal[0, 1, 2]) -> int:
+    def getCurrRange(self, motor: Literal[1, 2]) -> int:
         """
         Get the current range setting.
 
@@ -1176,7 +1176,7 @@ class Stage:
         amps = value * self.amps_per_step
         return round(amps, 3)
 
-    def getNVSpeed(self, motor: Literal[0, 1, 2]) -> int:
+    def getNVSpeed(self, motor: Literal[1, 2]) -> int:
         """
         Get the non-volitile memory speed setting
 
