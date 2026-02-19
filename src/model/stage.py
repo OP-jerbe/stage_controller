@@ -879,6 +879,8 @@ class Stage:
         self._check_motor_input(motor)
         command = f':{motor}u'
         response = self._send_query(command).replace(command, '')
+        if response == '!':
+            return float('nan')
         return int(response) / 100.0
 
     def getGlobalVelocity(self, motor: Literal[0, 1, 2]) -> int:
