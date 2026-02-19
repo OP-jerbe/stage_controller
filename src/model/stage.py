@@ -933,7 +933,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getSoftwareRev(self) -> str:
+    def getSoftwareRev(self, motor: Literal[1, 2]) -> str:
         """
         Get the series revision date
 
@@ -941,7 +941,8 @@ class Stage:
             str: 'xyz' = Series Revision-Date
         """
 
-        command = ':0z'
+        self._check_motor_input(motor)
+        command = f':{motor}z'
         return self._send_query(command).replace(command, '')
 
     def getSetPoint(self, motor: Literal[1, 2], set_point: int) -> dict[str, int]:
