@@ -175,7 +175,7 @@ class Stage:
         command = f':{motor}a{value}'
         self._send_command(command)
 
-    def setHome(self, motor: Literal[1, 2], position: int) -> None:
+    def setHome(self, motor: Literal[0, 1, 2], position: int) -> None:
         """Home to position"""
 
         self._check_motor_input(motor)
@@ -190,7 +190,7 @@ class Stage:
         command = f':{motor}c{position}'
         self._send_command(command)
 
-    def goToSetPoint(self, motor: Literal[1, 2], set_point: int) -> None:
+    def gotoSetPoint(self, motor: Literal[0, 1, 2], set_point: int) -> None:
         """Go to a predetermined set point position"""
 
         self._check_motor_input(motor)
@@ -204,7 +204,7 @@ class Stage:
         command = f':{motor}d{set_point}'
         self._send_command(command)
 
-    def setHalt(self, motor: Literal[1, 2], value: Literal[1, 2]) -> None:
+    def setHalt(self, motor: Literal[0, 1, 2], value: Literal[1, 2]) -> None:
         """Set the halt type. value=1=Hard Stop. value=2=Soft Stop"""
 
         self._check_motor_input(motor)
@@ -220,7 +220,7 @@ class Stage:
         command = f':{motor}h{value}'
         self._send_command(command)
 
-    def initMotor(self, motor: Literal[1, 2]) -> None:
+    def initMotor(self, motor: Literal[0, 1, 2]) -> None:
         """Initialize a motor"""
 
         self._check_motor_input(motor)
