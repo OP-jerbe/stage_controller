@@ -207,7 +207,7 @@ class Stage:
 
     # --- Set Points ---
 
-    def setSetPoint(
+    def editSetPoint(
         self,
         motor: Literal[1, 2],
         set_point: int,
