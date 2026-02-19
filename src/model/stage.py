@@ -968,8 +968,12 @@ class Stage:
             )
 
         command = f':{motor}{set_point}'
-        response = self._send_query(command)
-        return int(response)
+        response = self._send_query(command).replace(command, '')
+        return {
+            'position': int(response.split(',')[0]),
+            'velocity': int(response.split(',')[1]),
+            'accleration': int(response.split(',')[2]),
+        }
 
     def getNVAccel(self, motor: Literal[0, 1, 2]) -> int:
         """
