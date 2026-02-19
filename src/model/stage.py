@@ -664,7 +664,7 @@ class Stage:
     def setInputXConfig(
         self,
         motor: Literal[1, 2],
-        input: Literal[1, 2, 3, 4, 5, 6],
+        input: Literal[1, 2, 3, 4],
         value: Literal[0, 1, 2, 3],
     ) -> None:
         """
@@ -681,7 +681,7 @@ class Stage:
             raise TypeError(
                 f'Expected int for input arg but got {type(input).__name__}.'
             )
-        if input not in {1, 2, 3, 4, 5, 6}:
+        if input not in {1, 2, 3, 4}:
             raise ValueError('Invalid input selection. Valid inputs are 1, 2, 3, or 4.')
         if not isinstance(value, int):
             raise TypeError(
@@ -692,7 +692,7 @@ class Stage:
                 'Invalid configuration mode. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
             )
 
-        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W', 5: 'X', 6: 'Y'}
+        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W'}
 
         command = f':{motor}{input_map[input]}{value}'
         self._send_command(command)
@@ -1189,9 +1189,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getInputXConfig(
-        self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4, 5, 6]
-    ) -> int:
+    def getInputXConfig(self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4]) -> int:
         """
         Get an input configuration setting
 
@@ -1208,12 +1206,12 @@ class Stage:
             raise TypeError(
                 f'Expected int for input arg but got {type(input).__name__}.'
             )
-        if input not in {1, 2, 3, 4, 5, 6}:
+        if input not in {1, 2, 3, 4}:
             raise ValueError(
-                f'Invalid input selection: {input}. Valid inputs are [1, 2, 3, 4, 5, 6]'
+                f'Invalid input selection: {input}. Valid inputs are [1, 2, 3, 4]'
             )
 
-        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W', 5: 'X', 6: 'Y'}
+        input_map = {1: 'T', 2: 'U', 3: 'V', 4: 'W'}
         command = f':{motor}{input_map[input]}'
         response = self._send_query(command).replace(command, '')
         return int(response)
