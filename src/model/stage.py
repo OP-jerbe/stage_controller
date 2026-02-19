@@ -951,7 +951,7 @@ class Stage:
             set_point (int): the set point to query
 
         Returns:
-            int: the position assigned to the given set point
+            dict(str, int): the position, velocity, and acceleration setting for the set point.
         """
 
         self._check_motor_input(motor)
@@ -1027,6 +1027,7 @@ class Stage:
 
     def getAddresses(self) -> str:
         """Get the addresses of the motors"""
+        # TODO: add the motor arg back in. Sending ":0D" actually sends ":1D"
 
         command = ':0D'
         return self._send_query(command).replace(command, '')
@@ -1111,7 +1112,7 @@ class Stage:
 
     def getLoadError(self, motor: Literal[1, 2]) -> int:
         """
-        Get the allowable following error before faulting setting
+        Get the allowable following-error-before-faulting setting
 
         Args:
             motor (int): the motor to query
