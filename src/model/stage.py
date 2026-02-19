@@ -159,13 +159,15 @@ class Stage:
     ################################# Set Commands ####################################
     ###################################################################################
 
-    def setAccel(self, motor: Literal[1, 2], value: int) -> None:
+    # --- Non-Volatile Settings ---
+
+    def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
         """
-        Set the acceleration in steps/sec-sq
+        Set the non-volitile acceleration in steps/sec-sq
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the acceleration setting in steps/sec-sq
+            value (int): the acceleration in steps/sec-sq stored in non-volitile memory
         """
 
         self._check_motor_input(motor)
@@ -178,159 +180,16 @@ class Stage:
                 f'Invalid accleration setting: {value}. Acceleration setting must be between 0 and 65535.'
             )
 
-        command = f':{motor}a{value}'
+        command = f':{motor}A{value}'
         self._send_command(command)
 
-    def setHome(self, motor: Literal[0, 1, 2], position: int) -> None:
+    def setNVSpeed(self, motor: Literal[1, 2], value: int) -> None:
         """
-        Home to position
-
-        Args:
-            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
-            position (int): the home position
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(position, int):
-            raise TypeError(
-                f'Expected int for position arg but got {type(position).__name__}.'
-            )
-        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
-            raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
-            )
-        command = f':{motor}c{position}'
-        self._send_command(command)
-
-    def gotoSetPoint(self, motor: Literal[0, 1, 2], set_point: int) -> None:
-        """
-        Go to a predetermined set point position
-
-        Args:
-            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(set_point, int):
-            raise TypeError(
-                f'Expected int for value arg but got {type(set_point).__name__}.'
-            )
-        if set_point not in self.VALID_SET_POINTS:
-            raise ValueError(
-                f'Invalid set point selection. Valid set points are {sorted(list(self.VALID_SET_POINTS))}.'
-            )
-
-        command = f':{motor}d{set_point}'
-        self._send_command(command)
-
-    def setHalt(self, motor: Literal[0, 1, 2], value: Literal[1, 2]) -> None:
-        """Set the halt type. value=1=Hard Stop. value=2=Soft Stop"""
-
-        self._check_motor_input(motor)
-        if not isinstance(value, int):
-            raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if value not in (1, 2):
-            raise ValueError(
-                f'Invalid value selection: {motor}. Value selection must be 1 or 2.'
-            )
-
-        command = f':{motor}h{value}'
-        self._send_command(command)
-
-    def initMotor(self, motor: Literal[0, 1, 2]) -> None:
-        """
-        Initialize a motor
-
-        Args:
-            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
-        """
-
-        self._check_motor_input(motor)
-
-        command = f':{motor}i1'
-        self._send_command(command)
-
-    def jog(self, motor: Literal[1, 2], steps: int) -> None:
-        """
-        Jog the motor a number of steps (can be negative)
+        Set the non-volitile memory max speed in steps/sec
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
-            steps (int): the number of steps to jog
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(steps, int):
-            raise TypeError(
-                f'Expected int for steps arg but got {type(steps).__name__}.'
-            )
-
-        command = f':{motor}j{steps}'
-        self._send_command(command)
-
-    def setOutputX(
-        self, motor: Literal[1, 2], output: Literal[1, 2], state: Literal[0, 1]
-    ) -> None:
-        """
-        Force an output state On or Off.
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            output (int): the output to set (1 or 2)
-            state (int): the state of the output (0=Low or 1=High)
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(output, int):
-            raise TypeError(
-                f'Expected int for output arg but got {type(output).__name__}.'
-            )
-        if output not in {1, 2}:
-            raise ValueError(
-                f'Invalid output selection: {output}. Value selection must be 1 or 2.'
-            )
-        if not isinstance(state, int):
-            raise TypeError(
-                f'Expected int for state arg but got {type(state).__name__}.'
-            )
-        if state not in {0, 1}:
-            raise ValueError(f'Invalid state: {state}. Valid states are 0=Off or 1=On')
-
-        output_map = {1: 'o', 2: 'n'}
-        command = f':{motor}{output_map[output]}{state}'
-        self._send_command(command)
-
-    def gotoPos(self, motor: Literal[1, 2], position: int) -> None:
-        """
-        Go to a postion
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            position (int): the step to travel to
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(position, int):
-            raise TypeError(
-                f'Expected int for position arg but got {type(position).__name__}.'
-            )
-        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
-            raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
-            )
-
-        command = f':{motor}p{position}'
-        self._send_command(command)
-
-    def setSpeed(self, motor: Literal[1, 2], value: int) -> None:
-        """
-        Set the speed in steps/sec
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the speed setting (0-65535)
+            value (int): the speed in steps/sec in non-volitile memory
         """
 
         self._check_motor_input(motor)
@@ -343,50 +202,10 @@ class Stage:
                 f'Invalid speed setting: {value}. Speed setting must be between 0 and 65535.'
             )
 
-        command = f':{motor}s{value}'
+        command = f':{motor}S{value}'
         self._send_command(command)
 
-    def setVelocity(self, motor: Literal[1, 2], value: int) -> None:
-        """
-        Set the max velocity in steps/sec
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the velocity setting in steps/sec (0-65535)
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(value, int):
-            raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if not 0 <= value <= 65535:
-            raise ValueError(
-                f'Invalid velocity setting: {value}. Velocity setting must be between 0 and 65535.'
-            )
-
-        command = f':{motor}v{value}'
-        self._send_command(command)
-
-    def gotoAbsPos(self, motor: Literal[1, 2], position: float) -> None:
-        """
-        Go to absolute position 0-360.0 in degrees
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            position (float): the position the motor should go to in degrees (0-360.0)
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(position, (int, float)):
-            raise TypeError(f'Expected int or float but got {type(position).__name__}.')
-        if not 0 <= position <= 360.0:
-            raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between 0 and 360.0 degrees.'
-            )
-
-        command = f':{motor}x{position}'
-        self._send_command(command)
+    # --- Set Points ---
 
     def setSetPoint(
         self,
@@ -444,57 +263,59 @@ class Stage:
         command = f':{motor}{set_point}{position},{velocity},{acceleration}'
         self._send_command(command)
 
-    def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
+    def gotoSetPoint(self, motor: Literal[0, 1, 2], set_point: int) -> None:
         """
-        Set the non-volitile acceleration in steps/sec-sq
+        Go to a predetermined set point position
 
         Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the acceleration in steps/sec-sq stored in non-volitile memory
+            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
         """
+
+        self._check_motor_input(motor)
+        if not isinstance(set_point, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(set_point).__name__}.'
+            )
+        if set_point not in self.VALID_SET_POINTS:
+            raise ValueError(
+                f'Invalid set point selection. Valid set points are {sorted(list(self.VALID_SET_POINTS))}.'
+            )
+
+        command = f':{motor}d{set_point}'
+        self._send_command(command)
+
+    # --- Movement Settings ---
+
+    def setHalt(self, motor: Literal[0, 1, 2], value: Literal[1, 2]) -> None:
+        """Set the halt type. value=1=Hard Stop. value=2=Soft Stop"""
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
-        if not 0 <= value <= 65535:
+        if value not in (1, 2):
             raise ValueError(
-                f'Invalid accleration setting: {value}. Acceleration setting must be between 0 and 65535.'
+                f'Invalid value selection: {motor}. Value selection must be 1 or 2.'
             )
 
-        command = f':{motor}A{value}'
+        command = f':{motor}h{value}'
         self._send_command(command)
 
-    def setBaud(self, motor: Literal[1, 2], baud: int) -> None:
-        """
-        Set the baud rate for serial communication.
-
-        Args:
-            Motor (int): the motor to command (x-axis=1, y-axis=2)
-            baud (int): baud rate (9600, 19200, 38400, 57600, 115200)
-        """
+    def setMSteps(self, motor: Literal[1, 2], microsteps: int) -> None:
+        """Set the number of microsteps per step"""
 
         self._check_motor_input(motor)
-        if not isinstance(baud, int):
-            raise TypeError(f'Expected int for baud arg but got {type(baud).__name__}.')
-        match baud:
-            case 9600:
-                value = 1
-            case 19200:
-                value = 2
-            case 38400:
-                value = 3
-            case 57600:
-                value = 4
-            case 115200:
-                value = 5
-            case _:
-                raise ValueError(
-                    f'Invalid baud setting: {baud}. Valid baud settings: {sorted(list(self.VALID_BAUD_RATES))}'
-                )
+        if not isinstance(microsteps, int):
+            raise TypeError(
+                f'Expected int for microsteps arg but got {type(microsteps).__name__}'
+            )
+        if not 2 <= microsteps < 256:
+            raise ValueError(
+                f'Invalid value for microsteps arg: {microsteps}. Valid microsteps value is 2-256'
+            )
 
-        command = f':{motor}B{value}'
+        command = f':{motor}M{microsteps}'
         self._send_command(command)
 
     def setDirection(self, motor: Literal[1, 2], direction: str) -> None:
@@ -520,36 +341,13 @@ class Stage:
         command = f':{motor}C{value}'
         self._send_command(command)
 
-    def setAddress(self, motor: Literal[1, 2], value: int | str) -> None:
+    def setAccel(self, motor: Literal[1, 2], value: int) -> None:
         """
-        Set the address of a motor
+        Set the acceleration in steps/sec-sq
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int | str): the new address of the motor (1-9, A-F)
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(value, (int, str)):
-            raise TypeError(
-                f'Expected int or str for value arg but got {type(value).__name__}.'
-            )
-        if value not in self.VALID_ADDRESSES:
-            raise ValueError(
-                f'Invalid address value: {value}. Valid address values are {list(self.VALID_ADDRESSES)}'
-            )
-
-        command = f':{motor}D{value}'
-        self._send_command(command)
-
-    def setEncoderCPR(self, motor: Literal[1, 2], value: int) -> None:
-        """
-        Set the encoder quadrature counts (PPR x 4).
-        Default factory setting is 8192 (2048 PPR * 4).
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the encoder counts-per-revolution
+            value (int): the acceleration setting in steps/sec-sq
         """
 
         self._check_motor_input(motor)
@@ -557,13 +355,136 @@ class Stage:
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
-        if value not in self.VALID_QUADRATURE_COUNTS:
+        if not 0 <= value <= 65535:
             raise ValueError(
-                f"Invalid CPR '{value}'. Must be a quadrature total (PPR * 4) "
-                f'supported by the datasheet. Supported: {sorted(list(self.VALID_QUADRATURE_COUNTS))}'
+                f'Invalid accleration setting: {value}. Acceleration setting must be between 0 and 65535.'
             )
 
-        command = f':{motor}E{value}'
+        command = f':{motor}a{value}'
+        self._send_command(command)
+
+    def setSpeed(self, motor: Literal[1, 2], value: int) -> None:
+        """
+        Set the speed in steps/sec
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the speed setting (0-65535)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if not 0 <= value <= 65535:
+            raise ValueError(
+                f'Invalid speed setting: {value}. Speed setting must be between 0 and 65535.'
+            )
+
+        command = f':{motor}s{value}'
+        self._send_command(command)
+
+    def setVelocity(self, motor: Literal[1, 2], value: int) -> None:
+        """
+        Set the max velocity in steps/sec
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the velocity setting in steps/sec (0-65535)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if not 0 <= value <= 65535:
+            raise ValueError(
+                f'Invalid velocity setting: {value}. Velocity setting must be between 0 and 65535.'
+            )
+
+        command = f':{motor}v{value}'
+        self._send_command(command)
+
+    def setLoadError(self, motor: Literal[1, 2], value: int) -> None:
+        """
+        Set the allowable following error before faulting
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the load error setting in steps
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+
+        command = f':{motor}L{value}'
+        self._send_command(command)
+
+    # --- Positioning ---
+
+    def jog(self, motor: Literal[1, 2], steps: int) -> None:
+        """
+        Jog the motor a number of steps (can be negative)
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            steps (int): the number of steps to jog
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(steps, int):
+            raise TypeError(
+                f'Expected int for steps arg but got {type(steps).__name__}.'
+            )
+
+        command = f':{motor}j{steps}'
+        self._send_command(command)
+
+    def gotoPos(self, motor: Literal[1, 2], position: int) -> None:
+        """
+        Go to a postion
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            position (int): the step to travel to
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(position, int):
+            raise TypeError(
+                f'Expected int for position arg but got {type(position).__name__}.'
+            )
+        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
+            raise ValueError(
+                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
+            )
+
+        command = f':{motor}p{position}'
+        self._send_command(command)
+
+    def gotoAbsPos(self, motor: Literal[1, 2], position: float) -> None:
+        """
+        Go to absolute position 0-360.0 in degrees
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            position (float): the position the motor should go to in degrees (0-360.0)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(position, (int, float)):
+            raise TypeError(f'Expected int or float but got {type(position).__name__}.')
+        if not 0 <= position <= 360.0:
+            raise ValueError(
+                f'Invalid position setting: {position}. Position setting must be between 0 and 360.0 degrees.'
+            )
+
+        command = f':{motor}x{position}'
         self._send_command(command)
 
     def setZero(self, motor: Literal[1, 2]) -> None:
@@ -575,6 +496,30 @@ class Stage:
         """
         self._check_motor_input(motor)
         command = f':{motor}F'
+        self._send_command(command)
+
+    # --- Phase Current Settings ---
+
+    def setCurrRange(self, motor: Literal[1, 2], value: Literal[0, 1]) -> None:
+        """
+        Set the current range to high (2.0 A) or low (1.0 A)
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the current range where 0=high=2.0A, 1=low=1.0A
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if value not in {0, 1}:
+            raise ValueError(
+                f'Invalid range value: {value}. Valid range values are 0 (high range = 2.0A) or 1 (low range = 1.0A)'
+            )
+
+        command = f':{motor}O{value}'
         self._send_command(command)
 
     def setHoldingCurr(self, motor: Literal[1, 2], amps: float) -> None:
@@ -611,110 +556,6 @@ class Stage:
         command = f':{motor}H{value}'
         self._send_command(command)
 
-    def setHomingLoadError(self, motor: Literal[1, 2], value: int) -> None:
-        """
-        Set the allowable error before hard stop is detected when homing the motor.
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the load error setting in steps during homing
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(value, int):
-            raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if not 1 <= value <= 65535:
-            raise ValueError(
-                f'Invalid value for Initializing Load Error: {value}. Valid values are 1-65535.'
-            )
-
-        command = f':{motor}I{value}'
-        self._send_command(command)
-
-    def setOutXConfig(
-        self, motor: Literal[1, 2], input: Literal[1, 2], value: Literal[0, 1, 2, 3]
-    ) -> None:
-        """
-        Set an Output Configuration mode.
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            input (int): the input to configure (1 or 2)
-            value (int): the parameter where 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
-        """
-
-        self._check_motor_input(motor)
-        if input not in {1, 2}:
-            raise ValueError(
-                f'Invalid input selection: {input}. Valid input is 1 or 2.'
-            )
-        if value not in {0, 1, 2, 3}:
-            raise ValueError(
-                f'Invalid configuration mode: {value}. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
-            )
-
-        input_map = {1: 'J', 2: 'K'}
-        command = f':{motor}{input_map[input]}{value}'
-        self._send_command(command)
-
-    def setLoadError(self, motor: Literal[1, 2], value: int) -> None:
-        """
-        Set the allowable following error before faulting
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the load error setting in steps
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(value, int):
-            raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
-            )
-
-        command = f':{motor}L{value}'
-        self._send_command(command)
-
-    def setMSteps(self, motor: Literal[1, 2], microsteps: int) -> None:
-        """Set the number of microsteps per step"""
-
-        self._check_motor_input(motor)
-        if not isinstance(microsteps, int):
-            raise TypeError(
-                f'Expected int for microsteps arg but got {type(microsteps).__name__}'
-            )
-        if not 2 <= microsteps < 256:
-            raise ValueError(
-                f'Invalid value for microsteps arg: {microsteps}. Valid microsteps value is 2-256'
-            )
-
-        command = f':{motor}M{microsteps}'
-        self._send_command(command)
-
-    def setCurrRange(self, motor: Literal[1, 2], value: Literal[0, 1]) -> None:
-        """
-        Set the current range to high (2.0 A) or low (1.0 A)
-
-        Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the current range where 0=high=2.0A, 1=low=1.0A
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(value, int):
-            raise TypeError(
-                f'Expected int for value arg but got {type(value).__name__}.'
-            )
-        if value not in {0, 1}:
-            raise ValueError(
-                f'Invalid range value: {value}. Valid range values are 0 (high range = 2.0A) or 1 (low range = 1.0A)'
-            )
-
-        command = f':{motor}O{value}'
-        self._send_command(command)
-
     def setRunCurr(self, motor: Literal[1, 2], amps: float) -> None:
         """
         Set the run current in Amperes.
@@ -749,13 +590,61 @@ class Stage:
         command = f':{motor}R{value}'
         self._send_command(command)
 
-    def setNVSpeed(self, motor: Literal[1, 2], value: int) -> None:
+    # --- Initialization ---
+
+    def initMotor(self, motor: Literal[0, 1, 2]) -> None:
         """
-        Set the non-volitile memory max speed in steps/sec
+        Initialize a motor
+
+        Args:
+            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
+        """
+
+        self._check_motor_input(motor)
+
+        command = f':{motor}i1'
+        self._send_command(command)
+
+    def setOutput(
+        self, motor: Literal[1, 2], output: Literal[1, 2], state: Literal[0, 1]
+    ) -> None:
+        """
+        Force an output state On or Off.
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the speed in steps/sec in non-volitile memory
+            output (int): the output to set (1 or 2)
+            state (int): the state of the output (0=Low or 1=High)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(output, int):
+            raise TypeError(
+                f'Expected int for output arg but got {type(output).__name__}.'
+            )
+        if output not in {1, 2}:
+            raise ValueError(
+                f'Invalid output selection: {output}. Value selection must be 1 or 2.'
+            )
+        if not isinstance(state, int):
+            raise TypeError(
+                f'Expected int for state arg but got {type(state).__name__}.'
+            )
+        if state not in {0, 1}:
+            raise ValueError(f'Invalid state: {state}. Valid states are 0=Off or 1=On')
+
+        output_map = {1: 'o', 2: 'n'}
+        command = f':{motor}{output_map[output]}{state}'
+        self._send_command(command)
+
+    def setEncoderCPR(self, motor: Literal[1, 2], value: int) -> None:
+        """
+        Set the encoder quadrature counts (PPR x 4).
+        Default factory setting is 8192 (2048 PPR * 4).
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the encoder counts-per-revolution
         """
 
         self._check_motor_input(motor)
@@ -763,15 +652,42 @@ class Stage:
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
-        if not 0 <= value <= 65535:
+        if value not in self.VALID_QUADRATURE_COUNTS:
             raise ValueError(
-                f'Invalid speed setting: {value}. Speed setting must be between 0 and 65535.'
+                f"Invalid CPR '{value}'. Must be a quadrature total (PPR * 4) "
+                f'supported by the datasheet. Supported: {sorted(list(self.VALID_QUADRATURE_COUNTS))}'
             )
 
-        command = f':{motor}S{value}'
+        command = f':{motor}E{value}'
         self._send_command(command)
 
-    def setInputXConfig(
+    def setOutputConfig(
+        self, motor: Literal[1, 2], input: Literal[1, 2], value: Literal[0, 1, 2, 3]
+    ) -> None:
+        """
+        Set an Output Configuration mode.
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            input (int): the input to configure (1 or 2)
+            value (int): the parameter where 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
+        """
+
+        self._check_motor_input(motor)
+        if input not in {1, 2}:
+            raise ValueError(
+                f'Invalid input selection: {input}. Valid input is 1 or 2.'
+            )
+        if value not in {0, 1, 2, 3}:
+            raise ValueError(
+                f'Invalid configuration mode: {value}. Valid modes are 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped'
+            )
+
+        input_map = {1: 'J', 2: 'K'}
+        command = f':{motor}{input_map[input]}{value}'
+        self._send_command(command)
+
+    def setInputConfig(
         self,
         motor: Literal[1, 2],
         input: Literal[1, 2, 3, 4],
@@ -829,9 +745,225 @@ class Stage:
         command = f':{motor}Z{value}'
         self._send_command(command)
 
+    # --- Homing ---
+
+    def setHomingLoadError(self, motor: Literal[1, 2], value: int) -> None:
+        """
+        Set the allowable error before hard stop is detected when homing the motor.
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the load error setting in steps during homing
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, int):
+            raise TypeError(
+                f'Expected int for value arg but got {type(value).__name__}.'
+            )
+        if not 1 <= value <= 65535:
+            raise ValueError(
+                f'Invalid value for Initializing Load Error: {value}. Valid values are 1-65535.'
+            )
+
+        command = f':{motor}I{value}'
+        self._send_command(command)
+
+    def setHome(self, motor: Literal[0, 1, 2], position: int) -> None:
+        """
+        Home to position
+
+        Args:
+            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
+            position (int): the home position
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(position, int):
+            raise TypeError(
+                f'Expected int for position arg but got {type(position).__name__}.'
+            )
+        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
+            raise ValueError(
+                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
+            )
+        command = f':{motor}c{position}'
+        self._send_command(command)
+
+    # --- Communication ---
+
+    def setBaud(self, motor: Literal[1, 2], baud: int) -> None:
+        """
+        Set the baud rate for serial communication.
+
+        Args:
+            Motor (int): the motor to command (x-axis=1, y-axis=2)
+            baud (int): baud rate (9600, 19200, 38400, 57600, 115200)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(baud, int):
+            raise TypeError(f'Expected int for baud arg but got {type(baud).__name__}.')
+        match baud:
+            case 9600:
+                value = 1
+            case 19200:
+                value = 2
+            case 38400:
+                value = 3
+            case 57600:
+                value = 4
+            case 115200:
+                value = 5
+            case _:
+                raise ValueError(
+                    f'Invalid baud setting: {baud}. Valid baud settings: {sorted(list(self.VALID_BAUD_RATES))}'
+                )
+
+        command = f':{motor}B{value}'
+        self._send_command(command)
+
+    def setAddress(self, motor: Literal[1, 2], value: int | str) -> None:
+        """
+        Set the address of a motor
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int | str): the new address of the motor (1-9, A-F)
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(value, (int, str)):
+            raise TypeError(
+                f'Expected int or str for value arg but got {type(value).__name__}.'
+            )
+        if value not in self.VALID_ADDRESSES:
+            raise ValueError(
+                f'Invalid address value: {value}. Valid address values are {list(self.VALID_ADDRESSES)}'
+            )
+
+        command = f':{motor}D{value}'
+        self._send_command(command)
+
     ###################################################################################
     ################################# Get Requests ####################################
     ###################################################################################
+
+    # --- Non-Volitile Settings ---
+
+    def getNVAccel(self, motor: Literal[0, 1, 2]) -> int:
+        """
+        Get the non-volitile memory acceleration setting in steps/sec-sq
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the non-volitile acceleration setting in steps/sec-sq
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}A'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    def getNVVelocity(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the global max velocity in steps/sec
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the global max velocity in steps/sec
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}v'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    def getNVSpeed(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the non-volitile memory speed setting
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the speed setting in steps/sec from non-volitile memory.
+        """
+
+        command = f':{motor}S'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    # --- Set Points ---
+
+    def getSetPoint(self, motor: Literal[1, 2], set_point: int) -> dict[str, int]:
+        """
+        Get a set point's assigned position
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            set_point (int): the set point to query (0-9)
+
+        Returns:
+            dict(str, int): the position, velocity, and acceleration settings for the set point.
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(set_point, int):
+            raise TypeError(
+                f'Expected int for set_point arg but got {type(set_point).__name__}.'
+            )
+        if set_point not in self.VALID_SET_POINTS:
+            raise ValueError(
+                f'Invalid set point selection {set_point}. Valid set points are {sorted(list(self.VALID_SET_POINTS))}'
+            )
+
+        command = f':{motor}{set_point}'
+        response = self._send_query(command).replace(command, '')
+        return {
+            'position': int(response.split(',')[0]),
+            'velocity': int(response.split(',')[1]),
+            'accleration': int(response.split(',')[2]),
+        }
+
+    # --- Movement Settings ---
+
+    def getMSteps(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the number of micro-steps per step setting
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the number of micro-steps per step
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}M'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    def getDirection(self, motor: Literal[1, 2]) -> str:
+        """
+        Get the direction setting of the motor (CW or CCW)
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            str: the direction setting of the motor, "CW" or "CCW"
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}C'
+        response = self._send_query(command).replace(command, '')
+        direction_map = {'0': 'CCW', '1': 'CW'}
+        return direction_map[response]
 
     def getAccel(self, motor: Literal[1, 2]) -> int:
         """
@@ -849,116 +981,6 @@ class Stage:
         response = self._send_query(command)
         return int(response.replace(command, ''))
 
-    def getFollowingError(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the Following Error expressed as micro-steps relative to the encoder count (ratio)
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the ratio of micro-steps relative to the encoder count
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}b'
-        response = self._send_query(command)
-        return int(response.replace(command, ''))
-
-    def getStatus(self, motor: Literal[1, 2]) -> str:
-        """Get the (1) system status and (2) current active Set Point."""
-        # TODO: check the response of getStatus and format the return value appropriately
-        # response = ':1f0\x000'
-        # response.replace(command, '') = '0\x000' even when motor 1 was sent to setpoint 1
-
-        self._check_motor_input(motor)
-        command = f':{motor}f'
-        response = self._send_query(command).replace(command, '')
-        return response
-
-    def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
-        """
-        Get the motor status
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            list(int): [x, y] where:
-                x=1=Motor Running, x=2=Motor Stopped
-                y=Motor Status:
-                    0=Motor Ready
-                    1=Motor Not Homed
-                    2=Motor Not Initialized
-                    3=Motor Error
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}g'
-        response = self._send_query(command).replace(command, '')
-        return [int(char) for char in response]
-
-    def getInitEnable(self, motor: Literal[1, 2]) -> list[int]:
-        """
-        Get status of all inputs 4 + index
-
-        Args:
-            motor (int): motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            list(int): [u, v, x, y, z] where:
-                1=High
-                0=Low
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}l'
-        response = self._send_query(command).replace(command, '')
-        return [int(char) for char in response]
-
-    def getOutputStatus(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
-        """
-        Get status of an output signal
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-            output (int): the output to read (1 or 2)
-
-        Returns:
-            int: status of the output signal where 1=On and 0=Off.
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(output, int):
-            raise TypeError(
-                f'Expected int for output arg but got {type(output).__name__}.'
-            )
-        if output not in {1, 2}:
-            raise ValueError(
-                f'Invalid output selection: {output}. Valid outputs are 1 or 2.'
-            )
-
-        output_map = {1: 'o', 2: 'n'}
-        command = f':{motor}{output_map[output]}'
-        response = self._send_query(command)
-        return int(response.replace(command, ''))
-
-    def getPos(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the position of a motor
-
-        Args:
-            motor (int): motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the position of the motor
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}p'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
     def getSpeed(self, motor: Literal[1, 2]) -> int:
         """
         Get the current speed of the motor in steps/sec
@@ -972,6 +994,22 @@ class Stage:
 
         self._check_motor_input(motor)
         command = f':{motor}s'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    def getLoadError(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the allowable following-error-before-faulting setting
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the allowable following error setting
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}L'
         response = self._send_query(command).replace(command, '')
         return int(response)
 
@@ -993,19 +1031,21 @@ class Stage:
             return float('nan')
         return int(response) / 100.0
 
-    def getNVVelocity(self, motor: Literal[1, 2]) -> int:
+    # --- Positioning ---
+
+    def getPos(self, motor: Literal[1, 2]) -> int:
         """
-        Get the global max velocity in steps/sec
+        Get the position of a motor
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            int: the global max velocity in steps/sec
+            int: the position of the motor
         """
 
         self._check_motor_input(motor)
-        command = f':{motor}v'
+        command = f':{motor}p'
         response = self._send_query(command).replace(command, '')
         return int(response)
 
@@ -1043,129 +1083,37 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getSoftwareRev(self, motor: Literal[1, 2]) -> str:
+    def getFollowingError(self, motor: Literal[1, 2]) -> int:
         """
-        Get the series revision date
+        Get the Following Error expressed as micro-steps relative to the encoder count (ratio)
 
         Args:
             motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            str: 'xyz' = Series Revision-Date
+            int: the ratio of micro-steps relative to the encoder count
         """
 
         self._check_motor_input(motor)
-        command = f':{motor}z'
-        return self._send_query(command).replace(command, '')
+        command = f':{motor}b'
+        response = self._send_query(command)
+        return int(response.replace(command, ''))
 
-    def getSetPoint(self, motor: Literal[1, 2], set_point: int) -> dict[str, int]:
+    # --- Phase Current Settings ---
+
+    def getCurrRange(self, motor: Literal[1, 2]) -> int:
         """
-        Get a set point's assigned position
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-            set_point (int): the set point to query (0-9)
-
-        Returns:
-            dict(str, int): the position, velocity, and acceleration settings for the set point.
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(set_point, int):
-            raise TypeError(
-                f'Expected int for set_point arg but got {type(set_point).__name__}.'
-            )
-        if set_point not in self.VALID_SET_POINTS:
-            raise ValueError(
-                f'Invalid set point selection {set_point}. Valid set points are {sorted(list(self.VALID_SET_POINTS))}'
-            )
-
-        command = f':{motor}{set_point}'
-        response = self._send_query(command).replace(command, '')
-        return {
-            'position': int(response.split(',')[0]),
-            'velocity': int(response.split(',')[1]),
-            'accleration': int(response.split(',')[2]),
-        }
-
-    def getNVAccel(self, motor: Literal[0, 1, 2]) -> int:
-        """
-        Get the non-volitile memory acceleration setting in steps/sec-sq
+        Get the current range setting.
 
         Args:
             motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            int: the non-volitile acceleration setting in steps/sec-sq
+            int: the current range setting (0=high=2.0A, 1=low=1.0A)
         """
 
         self._check_motor_input(motor)
-        command = f':{motor}A'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
-    def getBaud(self, motor: Literal[1, 2]) -> int | None:
-        """
-        Get the baud rate for serial communication
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the baud rate if set
-            None: if the baud rate has not been set
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}B'
-        response = self._send_query(command).replace(command, '')
-        baud_map = {
-            '0': None,
-            '1': 9600,
-            '2': 19200,
-            '3': 38400,
-            '4': 57600,
-            '5': 115200,
-        }
-        return baud_map[response]
-
-    def getDirection(self, motor: Literal[1, 2]) -> str:
-        """
-        Get the direction setting of the motor (CW or CCW)
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            str: the direction setting of the motor, "CW" or "CCW"
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}C'
-        response = self._send_query(command).replace(command, '')
-        direction_map = {'0': 'CCW', '1': 'CW'}
-        return direction_map[response]
-
-    def getAddresses(self) -> str:
-        """Get the addresses of the motors"""
-        # TODO: add the motor arg back in. Sending ":0D" actually sends ":1D"
-
-        command = ':0D'
-        return self._send_query(command).replace(command, '')
-
-    def getEncoderCPR(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the encoder counts-per-revolution setting
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the encoder counts-per-revolution setting
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}E'
+        command = f':{motor}O'
         response = self._send_query(command).replace(command, '')
         return int(response)
 
@@ -1188,97 +1136,6 @@ class Stage:
         amps = value * self.amps_per_step
         return round(amps, 3)
 
-    def getHomingLoadError(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the allowable error setting before hard stop in detected
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the error setting
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}I'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
-    def getOutXConfig(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
-        """
-        Get an output configuration setting.
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-            ouput (int): the output to query (1 or 2)
-
-        Returns:
-            int: the output setting where, 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
-        """
-
-        self._check_motor_input(motor)
-        if not isinstance(output, int):
-            raise TypeError(
-                f'Expected int for output arg but got {type(output).__name__}.'
-            )
-        if output not in {1, 2}:
-            raise ValueError(
-                f'Invalid output selection: {output}. Valid outputs are 1 or 2.'
-            )
-
-        output_map = {1: 'J', 2: 'K'}
-        command = f':{motor}{output_map[output]}'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
-    def getLoadError(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the allowable following-error-before-faulting setting
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the allowable following error setting
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}L'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
-    def getMSteps(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the number of micro-steps per step setting
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the number of micro-steps per step
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}M'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
-    def getCurrRange(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the current range setting.
-
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the current range setting (0=high=2.0A, 1=low=1.0A)
-        """
-
-        self._check_motor_input(motor)
-        command = f':{motor}O'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
     def getRunCurr(self, motor: Literal[1, 2]) -> float:
         """
         Get the run current setting.
@@ -1298,22 +1155,9 @@ class Stage:
         amps = value * self.amps_per_step
         return round(amps, 3)
 
-    def getNVSpeed(self, motor: Literal[1, 2]) -> int:
-        """
-        Get the non-volitile memory speed setting
+    # --- Initialization ---
 
-        Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-
-        Returns:
-            int: the speed setting in steps/sec from non-volitile memory.
-        """
-
-        command = f':{motor}S'
-        response = self._send_query(command).replace(command, '')
-        return int(response)
-
-    def getInputXConfig(self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4]) -> int:
+    def getInputConfig(self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4]) -> int:
         """
         Get an input configuration setting
 
@@ -1340,6 +1184,33 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
+    def getOutputConfig(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
+        """
+        Get an output configuration setting.
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            ouput (int): the output to query (1 or 2)
+
+        Returns:
+            int: the output setting where, 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(output, int):
+            raise TypeError(
+                f'Expected int for output arg but got {type(output).__name__}.'
+            )
+        if output not in {1, 2}:
+            raise ValueError(
+                f'Invalid output selection: {output}. Valid outputs are 1 or 2.'
+            )
+
+        output_map = {1: 'J', 2: 'K'}
+        command = f':{motor}{output_map[output]}'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
     def getIdxConfig(self, motor: Literal[1, 2]) -> int:
         """
         Get the index configuration parameter
@@ -1354,3 +1225,166 @@ class Stage:
         command = f':{motor}Z'
         response = self._send_query(command).replace(command, '')
         return int(response)
+
+    def getEncoderCPR(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the encoder counts-per-revolution setting
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the encoder counts-per-revolution setting
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}E'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    # --- Homing ---
+
+    def getHomingLoadError(self, motor: Literal[1, 2]) -> int:
+        """
+        Get the allowable error setting before hard stop in detected
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the error setting
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}I'
+        response = self._send_query(command).replace(command, '')
+        return int(response)
+
+    # --- Communication ---
+
+    def getSoftwareRev(self, motor: Literal[1, 2]) -> str:
+        """
+        Get the series revision date
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            str: 'xyz' = Series Revision-Date
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}z'
+        return self._send_query(command).replace(command, '')
+
+    def getBaud(self, motor: Literal[1, 2]) -> int | None:
+        """
+        Get the baud rate for serial communication
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            int: the baud rate if set
+            None: if the baud rate has not been set
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}B'
+        response = self._send_query(command).replace(command, '')
+        baud_map = {
+            '0': None,
+            '1': 9600,
+            '2': 19200,
+            '3': 38400,
+            '4': 57600,
+            '5': 115200,
+        }
+        return baud_map[response]
+
+    def getAddresses(self) -> str:
+        """Get the addresses of the motors"""
+        # TODO: add the motor arg back in. Sending ":0D" actually sends ":1D"
+
+        command = ':0D'
+        return self._send_query(command).replace(command, '')
+
+    # --- Statuses ---
+
+    def getIdxStates(self, motor: Literal[1, 2]) -> list[int]:
+        """
+        Get status of all inputs 4 + index
+
+        Args:
+            motor (int): motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            list(int): [i1, i2, i3, i4, idx] where:
+                1=High
+                0=Low
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}l'
+        response = self._send_query(command).replace(command, '')
+        return [int(char) for char in response]
+
+    def getOutputStatus(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
+        """
+        Get status of an output signal
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            output (int): the output to read (1 or 2)
+
+        Returns:
+            int: status of the output signal where 1=On and 0=Off.
+        """
+
+        self._check_motor_input(motor)
+        if not isinstance(output, int):
+            raise TypeError(
+                f'Expected int for output arg but got {type(output).__name__}.'
+            )
+        if output not in {1, 2}:
+            raise ValueError(
+                f'Invalid output selection: {output}. Valid outputs are 1 or 2.'
+            )
+
+        output_map = {1: 'o', 2: 'n'}
+        command = f':{motor}{output_map[output]}'
+        response = self._send_query(command)
+        return int(response.replace(command, ''))
+
+    def getStatus(self, motor: Literal[1, 2]) -> str:
+        """Get the (1) system status and (2) current active Set Point."""
+        # TODO: check the response of getStatus and format the return value appropriately
+        # response = ':1f0\x000'
+        # response.replace(command, '') = '0\x000' even when motor 1 was sent to setpoint 1
+
+        self._check_motor_input(motor)
+        command = f':{motor}f'
+        response = self._send_query(command).replace(command, '')
+        return response
+
+    def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
+        """
+        Get the motor status
+
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
+        Returns:
+            list(int): [x, y] where:
+                x=1=Motor Running, x=2=Motor Stopped
+                y=Motor Status:
+                    0=Motor Ready
+                    1=Motor Not Homed
+                    2=Motor Not Initialized
+                    3=Motor Error
+        """
+
+        self._check_motor_input(motor)
+        command = f':{motor}g'
+        response = self._send_query(command).replace(command, '')
+        return [int(char) for char in response]
