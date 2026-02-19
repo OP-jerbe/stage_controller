@@ -913,6 +913,8 @@ class Stage:
         self._check_motor_input(motor)
         command = f':{motor}x'
         response = self._send_query(command).replace(command, '')
+        if response == '!':
+            return float('nan')
         return int(response) / 10.0
 
     def getEncoderPos(self, motor: Literal[1, 2]) -> int:
