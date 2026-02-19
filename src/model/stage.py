@@ -76,6 +76,12 @@ class Stage:
             print(f'Failed to make a serial connection to {port}.\n\n{str(e)}')
             self.ser = None
 
+    def close_connection(self) -> None:
+        """Closes an open serial port"""
+        if self.ser and self.ser.is_open:
+            self.ser.close()
+            self.ser = None
+
     def _send_command(self, command: str) -> None:
         """
         Sends a command string to the stage without expecting a response.
