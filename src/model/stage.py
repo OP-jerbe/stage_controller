@@ -272,7 +272,7 @@ class Stage:
         command = f':{motor}{output_map[output]}{state}'
         self._send_command(command)
 
-    def goToPos(self, motor: Literal[1, 2], position: int) -> None:
+    def gotoPos(self, motor: Literal[1, 2], position: int) -> None:
         """Go to a postion"""
 
         self._check_motor_input(motor)
@@ -577,7 +577,7 @@ class Stage:
         command = f':{motor}L{value}'
         self._send_command(command)
 
-    def setMstepsPerStep(self, motor: Literal[1, 2], microsteps: int) -> None:
+    def setMSteps(self, motor: Literal[1, 2], microsteps: int) -> None:
         """Set the number of microsteps per step"""
 
         self._check_motor_input(motor)
@@ -593,7 +593,7 @@ class Stage:
         command = f':{motor}M{microsteps}'
         self._send_command(command)
 
-    def setCurrentRange(self, motor: Literal[1, 2], value: Literal[0, 1]) -> None:
+    def setCurrRange(self, motor: Literal[1, 2], value: Literal[0, 1]) -> None:
         """
         Set the current range to high (2.0 A) or low (1.0 A)
 
@@ -833,7 +833,7 @@ class Stage:
         response = self._send_query(command)
         return int(response.replace(command, ''))
 
-    def getPosition(self, motor: Literal[1, 2]) -> int:
+    def getPos(self, motor: Literal[1, 2]) -> int:
         """
         Get the position of a motor
 
@@ -849,7 +849,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getCurrentSpeed(self, motor: Literal[1, 2]) -> int:
+    def getSpeed(self, motor: Literal[1, 2]) -> int:
         """
         Get the current speed of the motor in steps/sec
 
@@ -899,7 +899,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getAbsPosition(self, motor: Literal[1, 2]) -> float:
+    def getAbsPos(self, motor: Literal[1, 2]) -> float:
         """
         Get the absolute position of the motor in degrees.
 
@@ -915,7 +915,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response) / 10.0
 
-    def getEncoderPosition(self, motor: Literal[1, 2]) -> int:
+    def getEncoderPos(self, motor: Literal[1, 2]) -> int:
         """
         Get the encoder counts (can be negative)
 
@@ -1125,7 +1125,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getMStepsPerStep(self, motor: Literal[1, 2]) -> int:
+    def getMSteps(self, motor: Literal[1, 2]) -> int:
         """
         Get the number of micro-steps per step setting
 
@@ -1141,7 +1141,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getCurrentRange(self, motor: Literal[0, 1, 2]) -> int:
+    def getCurrRange(self, motor: Literal[0, 1, 2]) -> int:
         """
         Get the current range setting.
 
