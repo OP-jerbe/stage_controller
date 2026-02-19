@@ -6,7 +6,7 @@ import serial
 
 class Stage:
     MOTOR_POSITION_RANGE = (-2.147e9, 2.147e9)
-    CONTROLLER_MAX_CURRENT_RATING = 2.0  # AMPS
+    CONTROLLER_CURRENT_RANGE = 2.0  # AMPS
     CONTROLLER_MAX_CURRENT_VALUE = 31
     VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
     VALID_ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
@@ -41,12 +41,13 @@ class Stage:
         self.com_port = com_port
         self.ser: Optional[serial.Serial] = None
         self.motor_max_current = motor_max_current  # AMPS
+        self.controller_current_range = self.CONTROLLER_CURRENT_RANGE
 
         if low_current_range:
-            self.CONTROLLER_MAX_CURRENT_RATING = 1.0
+            self.controller_current_range = 1.0
 
         self.amps_per_step = (
-            self.CONTROLLER_MAX_CURRENT_RATING / self.CONTROLLER_MAX_CURRENT_VALUE
+            self.controller_current_range / self.CONTROLLER_MAX_CURRENT_VALUE
         )
 
         if self.com_port:
