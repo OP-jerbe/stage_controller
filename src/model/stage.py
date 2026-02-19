@@ -828,7 +828,7 @@ class Stage:
                 f'Invalid output selection: {output}. Valid outputs are 1 or 2.'
             )
 
-        output_map = {1: 'n', 2: 'o'}
+        output_map = {1: 'o', 2: 'n'}
         command = f':{motor}{output_map[output]}'
         response = self._send_query(command)
         return int(response.replace(command, ''))
