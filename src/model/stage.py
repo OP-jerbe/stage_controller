@@ -5,7 +5,7 @@ import serial
 
 
 class Stage:
-    MOTOR_POSITION_RANGE = (-2.147e9, 2.147e9)
+    MAX_MOTOR_POSITION = 2.147e9
     CONTROLLER_CURRENT_RANGE = 2.0  # AMPS
     CONTROLLER_MAX_CURRENT_VALUE = 31
     SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
@@ -246,9 +246,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
+        if not -self.MAX_MOTOR_POSITION <= position <= self.MAX_MOTOR_POSITION:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
+                f'Invalid position setting: {position}. Position setting must be between {-self.MAX_MOTOR_POSITION} and {self.MAX_MOTOR_POSITION}.'
             )
         if not isinstance(velocity, int):
             raise TypeError(
@@ -466,9 +466,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
+        if not -self.MAX_MOTOR_POSITION <= position <= self.MAX_MOTOR_POSITION:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
+                f'Invalid position setting: {position}. Position setting must be between {-self.MAX_MOTOR_POSITION} and {self.MAX_MOTOR_POSITION}.'
             )
 
         command = f':{motor}p{position}'
@@ -790,9 +790,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
             )
-        if not self.MOTOR_POSITION_RANGE[0] <= position <= self.MOTOR_POSITION_RANGE[1]:
+        if not -self.MAX_MOTOR_POSITION <= position <= self.MAX_MOTOR_POSITION:
             raise ValueError(
-                f'Invalid position setting: {position}. Position setting must be between {self.MOTOR_POSITION_RANGE[0]} and {self.MOTOR_POSITION_RANGE[1]}.'
+                f'Invalid position setting: {position}. Position setting must be between {-self.MAX_MOTOR_POSITION} and {self.MAX_MOTOR_POSITION}.'
             )
         command = f':{motor}c{position}'
         self._send_command(command)
