@@ -8,10 +8,10 @@ class Stage:
     MOTOR_POSITION_RANGE = (-2.147e9, 2.147e9)
     CONTROLLER_CURRENT_RANGE = 2.0  # AMPS
     CONTROLLER_MAX_CURRENT_VALUE = 31
-    VALID_SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
-    VALID_ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
-    VALID_BAUD_RATES = {9600, 19200, 38400, 57600, 115200}
-    VALID_QUADRATURE_COUNTS = {
+    SET_POINTS = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+    ADDRESSES = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F'}
+    BAUD_RATES = {9600, 19200, 38400, 57600, 115200}
+    QUADRATURE_COUNTS = {
         192,
         276,
         400,
@@ -238,9 +238,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for set_point arg but got {type(set_point).__name__}.'
             )
-        if set_point not in self.VALID_SET_POINTS:
+        if set_point not in self.SET_POINTS:
             raise ValueError(
-                f'Invalid set point selection. Valid set points are {sorted(list(self.VALID_SET_POINTS))}.'
+                f'Invalid set point selection. Valid set points are {sorted(list(self.SET_POINTS))}.'
             )
         if not isinstance(position, int):
             raise TypeError(
@@ -283,9 +283,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for value arg but got {type(set_point).__name__}.'
             )
-        if set_point not in self.VALID_SET_POINTS:
+        if set_point not in self.SET_POINTS:
             raise ValueError(
-                f'Invalid set point selection. Valid set points are {sorted(list(self.VALID_SET_POINTS))}.'
+                f'Invalid set point selection. Valid set points are {sorted(list(self.SET_POINTS))}.'
             )
 
         command = f':{motor}d{set_point}'
@@ -659,10 +659,10 @@ class Stage:
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
-        if value not in self.VALID_QUADRATURE_COUNTS:
+        if value not in self.QUADRATURE_COUNTS:
             raise ValueError(
                 f"Invalid CPR '{value}'. Must be a quadrature total (PPR * 4) "
-                f'supported by the datasheet. Supported: {sorted(list(self.VALID_QUADRATURE_COUNTS))}'
+                f'supported by the datasheet. Supported: {sorted(list(self.QUADRATURE_COUNTS))}'
             )
 
         command = f':{motor}E{value}'
@@ -824,7 +824,7 @@ class Stage:
                 value = 5
             case _:
                 raise ValueError(
-                    f'Invalid baud setting: {baud}. Valid baud settings: {sorted(list(self.VALID_BAUD_RATES))}'
+                    f'Invalid baud setting: {baud}. Valid baud settings: {sorted(list(self.BAUD_RATES))}'
                 )
 
         command = f':{motor}B{value}'
@@ -844,9 +844,9 @@ class Stage:
             raise TypeError(
                 f'Expected int or str for value arg but got {type(value).__name__}.'
             )
-        if value not in self.VALID_ADDRESSES:
+        if value not in self.ADDRESSES:
             raise ValueError(
-                f'Invalid address value: {value}. Valid address values are {list(self.VALID_ADDRESSES)}'
+                f'Invalid address value: {value}. Valid address values are {list(self.ADDRESSES)}'
             )
 
         command = f':{motor}D{value}'
@@ -924,9 +924,9 @@ class Stage:
             raise TypeError(
                 f'Expected int for set_point arg but got {type(set_point).__name__}.'
             )
-        if set_point not in self.VALID_SET_POINTS:
+        if set_point not in self.SET_POINTS:
             raise ValueError(
-                f'Invalid set point selection {set_point}. Valid set points are {sorted(list(self.VALID_SET_POINTS))}'
+                f'Invalid set point selection {set_point}. Valid set points are {sorted(list(self.SET_POINTS))}'
             )
 
         command = f':{motor}{set_point}'
