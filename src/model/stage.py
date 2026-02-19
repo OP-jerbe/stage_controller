@@ -728,7 +728,7 @@ class Stage:
         Get the acceleration setting
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the acceleration of the motor
@@ -744,7 +744,7 @@ class Stage:
         Get the Following Error expressed as micro-steps relative to the encoder count (ratio)
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the ratio of micro-steps relative to the encoder count
@@ -763,15 +763,15 @@ class Stage:
 
         self._check_motor_input(motor)
         command = f':{motor}f'
-        response = self._send_query(command)
-        return response.replace(command, '')
+        response = self._send_query(command).replace(command, '')
+        return response
 
     def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
         """
         Get the motor status
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             list(int): [x, y] where:
@@ -793,7 +793,7 @@ class Stage:
         Get status of all inputs 4 + index
 
         Args:
-            motor (int): motor to command
+            motor (int): motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             list(int): [u, v, x, y, z] where:
@@ -811,8 +811,8 @@ class Stage:
         Get status of an output signal
 
         Args:
-            motor (int): the motor to command
-            output (int): the output to read
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            output (int): the output to read (1 or 2)
 
         Returns:
             int: status of the output signal where 1=On and 0=Off.
@@ -838,7 +838,7 @@ class Stage:
         Get the position of a motor
 
         Args:
-            motor (int): motor to command
+            motor (int): motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the position of the motor
@@ -854,7 +854,7 @@ class Stage:
         Get the current speed of the motor in steps/sec
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the current speed of the motor in steps/sec
@@ -870,7 +870,7 @@ class Stage:
         Get the RPM of a motor. (xxxx = XX.XX)
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             float: the motor RPM
@@ -888,7 +888,7 @@ class Stage:
         Get the global max velocity in steps/sec
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the global max velocity in steps/sec
@@ -904,7 +904,7 @@ class Stage:
         Get the absolute position of the motor in degrees.
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             float: the absolute position of the motor in degrees (0-360.0)
@@ -922,7 +922,7 @@ class Stage:
         Get the encoder counts (can be negative)
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the encoder counts
@@ -937,6 +937,9 @@ class Stage:
         """
         Get the series revision date
 
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+
         Returns:
             str: 'xyz' = Series Revision-Date
         """
@@ -950,11 +953,11 @@ class Stage:
         Get a set point's assigned position
 
         Args:
-            motor (int): the motor to query
-            set_point (int): the set point to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            set_point (int): the set point to query (0-9)
 
         Returns:
-            dict(str, int): the position, velocity, and acceleration setting for the set point.
+            dict(str, int): the position, velocity, and acceleration settings for the set point.
         """
 
         self._check_motor_input(motor)
@@ -980,7 +983,7 @@ class Stage:
         Get the non-volitile memory acceleration setting in steps/sec-sq
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the non-volitile acceleration setting in steps/sec-sq
@@ -991,15 +994,16 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getBaud(self, motor: Literal[0, 1, 2]) -> int | None:
+    def getBaud(self, motor: Literal[1, 2]) -> int | None:
         """
         Get the baud rate for serial communication
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            int: the baud rate
+            int: the baud rate if set
+            None: if the baud rate has not been set
         """
 
         self._check_motor_input(motor)
@@ -1020,7 +1024,7 @@ class Stage:
         Get the direction setting of the motor (CW or CCW)
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             str: the direction setting of the motor, "CW" or "CCW"
@@ -1044,7 +1048,7 @@ class Stage:
         Get the encoder counts-per-revolution setting
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the encoder counts-per-revolution setting
@@ -1060,7 +1064,7 @@ class Stage:
         Get the holding current setting
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             float: the holding current setting in amps
@@ -1079,7 +1083,7 @@ class Stage:
         Get the allowable error setting before hard stop in detected
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the error setting
@@ -1095,7 +1099,7 @@ class Stage:
         Get an output configuration setting.
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
             ouput (int): the output to query (1 or 2)
 
         Returns:
@@ -1122,7 +1126,7 @@ class Stage:
         Get the allowable following-error-before-faulting setting
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the allowable following error setting
@@ -1138,7 +1142,7 @@ class Stage:
         Get the number of micro-steps per step setting
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the number of micro-steps per step
@@ -1154,7 +1158,7 @@ class Stage:
         Get the current range setting.
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the current range setting (0=high=2.0A, 1=low=1.0A)
@@ -1170,7 +1174,7 @@ class Stage:
         Get the run current setting.
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             float: the run current setting in amps
@@ -1189,7 +1193,7 @@ class Stage:
         Get the non-volitile memory speed setting
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: the speed setting in steps/sec from non-volitile memory.
@@ -1204,8 +1208,8 @@ class Stage:
         Get an input configuration setting
 
         Args:
-            motor (int): the motor to query
-            input (int): the input to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            input (int): the input to query (1, 2, 3, or 4)
 
         Returns:
             int: config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
@@ -1231,7 +1235,7 @@ class Stage:
         Get the index configuration parameter
 
         Args:
-            motor (int): the motor to query
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
             int: config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
