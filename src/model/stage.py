@@ -160,7 +160,13 @@ class Stage:
     ###################################################################################
 
     def setAccel(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the acceleration in steps/sec-sq"""
+        """
+        Set the acceleration in steps/sec-sq
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the acceleration setting in steps/sec-sq
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
@@ -176,7 +182,13 @@ class Stage:
         self._send_command(command)
 
     def setHome(self, motor: Literal[0, 1, 2], position: int) -> None:
-        """Home to position"""
+        """
+        Home to position
+
+        Args:
+            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
+            position (int): the home position
+        """
 
         self._check_motor_input(motor)
         if not isinstance(position, int):
@@ -191,15 +203,22 @@ class Stage:
         self._send_command(command)
 
     def gotoSetPoint(self, motor: Literal[0, 1, 2], set_point: int) -> None:
-        """Go to a predetermined set point position"""
+        """
+        Go to a predetermined set point position
+
+        Args:
+            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
+        """
 
         self._check_motor_input(motor)
         if not isinstance(set_point, int):
             raise TypeError(
                 f'Expected int for value arg but got {type(set_point).__name__}.'
             )
-        if set_point not in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]:
-            raise ValueError('Invalid set point selection. Valid set points are 0-9.')
+        if set_point not in self.VALID_SET_POINTS:
+            raise ValueError(
+                f'Invalid set point selection. Valid set points are {sorted(list(self.VALID_SET_POINTS))}.'
+            )
 
         command = f':{motor}d{set_point}'
         self._send_command(command)
@@ -221,7 +240,12 @@ class Stage:
         self._send_command(command)
 
     def initMotor(self, motor: Literal[0, 1, 2]) -> None:
-        """Initialize a motor"""
+        """
+        Initialize a motor
+
+        Args:
+            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
+        """
 
         self._check_motor_input(motor)
 
@@ -229,7 +253,13 @@ class Stage:
         self._send_command(command)
 
     def jog(self, motor: Literal[1, 2], steps: int) -> None:
-        """Jog the motor a number of steps (can be negative)"""
+        """
+        Jog the motor a number of steps (can be negative)
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            steps (int): the number of steps to jog
+        """
 
         self._check_motor_input(motor)
         if not isinstance(steps, int):
@@ -247,9 +277,9 @@ class Stage:
         Force an output state On or Off.
 
         Args:
-            motor (int): the motor to command
-            output (int): the output to set
-            state (int): the state of the output
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            output (int): the output to set (1 or 2)
+            state (int): the state of the output (0=Low or 1=High)
         """
 
         self._check_motor_input(motor)
@@ -273,7 +303,13 @@ class Stage:
         self._send_command(command)
 
     def gotoPos(self, motor: Literal[1, 2], position: int) -> None:
-        """Go to a postion"""
+        """
+        Go to a postion
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            position (int): the step to travel to
+        """
 
         self._check_motor_input(motor)
         if not isinstance(position, int):
@@ -289,7 +325,13 @@ class Stage:
         self._send_command(command)
 
     def setSpeed(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the speed in steps/sec"""
+        """
+        Set the speed in steps/sec
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the speed setting (0-65535)
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
@@ -305,7 +347,13 @@ class Stage:
         self._send_command(command)
 
     def setVelocity(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the max velocity in steps/sec"""
+        """
+        Set the max velocity in steps/sec
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the velocity setting in steps/sec (0-65535)
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
@@ -321,7 +369,13 @@ class Stage:
         self._send_command(command)
 
     def gotoAbsPos(self, motor: Literal[1, 2], position: float) -> None:
-        """Go to absolute position 0-360.0 in degrees"""
+        """
+        Go to absolute position 0-360.0 in degrees
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            position (float): the position the motor should go to in degrees (0-360.0)
+        """
 
         self._check_motor_input(motor)
         if not isinstance(position, (int, float)):
@@ -342,7 +396,16 @@ class Stage:
         velocity: int,
         acceleration: int,
     ) -> None:
-        """Set a set point position. Valid set points are 0-9"""
+        """
+        Create a set point profile. Valid set points are 0-9.
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            set_point (int): the set point profile (0-9)
+            position (int): the position the motor should travel to when the set point is executed
+            velocity (int): the velocity the motor should use when set the point is executed
+            acceleration (int): the acceleration the motor should use when the set point is executed
+        """
 
         self._check_motor_input(motor)
         if not isinstance(set_point, int):
@@ -382,7 +445,13 @@ class Stage:
         self._send_command(command)
 
     def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the non-volitile acceleration in steps/sec-sq"""
+        """
+        Set the non-volitile acceleration in steps/sec-sq
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the acceleration in steps/sec-sq stored in non-volitile memory
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
@@ -434,7 +503,7 @@ class Stage:
 
         Args:
             motor (int): the motor to command (x-axis=1, y-axis=2)
-            direction (str): `CW` or `CCW` - the direction the motor will spin when commanded with a positive value.
+            direction (str): `"CW"` or `"CCW"` - the direction the motor will spin when homed.
         """
 
         self._check_motor_input(motor)
@@ -452,7 +521,13 @@ class Stage:
         self._send_command(command)
 
     def setAddress(self, motor: Literal[1, 2], value: int | str) -> None:
-        """Set the address of a motor"""
+        """
+        Set the address of a motor
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int | str): the new address of the motor (1-9, A-F)
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, (int, str)):
@@ -471,6 +546,10 @@ class Stage:
         """
         Set the encoder quadrature counts (PPR x 4).
         Default factory setting is 8192 (2048 PPR * 4).
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the encoder counts-per-revolution
         """
 
         self._check_motor_input(motor)
@@ -488,7 +567,12 @@ class Stage:
         self._send_command(command)
 
     def setZero(self, motor: Literal[1, 2]) -> None:
-        """Sets the motor's zero position"""
+        """
+        Sets the motor's zero position
+
+        Args:
+            motor: the motor to command (1=x-axis, 2=y-axis)
+        """
         self._check_motor_input(motor)
         command = f':{motor}F'
         self._send_command(command)
@@ -498,6 +582,10 @@ class Stage:
         Set the holding current in Amperes.
         The hardware uses a 0-31 scale where 31 = 1.0A for low current scale (default)
         or 31 = 2.0A for high current scale.
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            amps (float): the holding current in amps when the motor is not in motion
         """
 
         self._check_motor_input(motor)
@@ -523,8 +611,14 @@ class Stage:
         command = f':{motor}H{value}'
         self._send_command(command)
 
-    def setInitLoadError(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the allowable error before hard stop is detected when homing the motor."""
+    def setHomingLoadError(self, motor: Literal[1, 2], value: int) -> None:
+        """
+        Set the allowable error before hard stop is detected when homing the motor.
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the load error setting in steps during homing
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
@@ -546,9 +640,9 @@ class Stage:
         Set an Output Configuration mode.
 
         Args:
-            motor (int): The motor to command
-            input (int): input to configure (1 or 2)
-            value (int): 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            input (int): the input to configure (1 or 2)
+            value (int): the parameter where 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
         """
 
         self._check_motor_input(motor)
@@ -566,7 +660,13 @@ class Stage:
         self._send_command(command)
 
     def setLoadError(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the allowable following error before faulting"""
+        """
+        Set the allowable following error before faulting
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the load error setting in steps
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
@@ -598,8 +698,8 @@ class Stage:
         Set the current range to high (2.0 A) or low (1.0 A)
 
         Args:
-            motor (int): the motor to command
-            value (int): 0=high=2.0A, 1=low=1.0A
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the current range where 0=high=2.0A, 1=low=1.0A
         """
 
         self._check_motor_input(motor)
@@ -615,11 +715,15 @@ class Stage:
         command = f':{motor}O{value}'
         self._send_command(command)
 
-    def setRunCurr(self, motor: Literal[1, 2], amps: int) -> None:
+    def setRunCurr(self, motor: Literal[1, 2], amps: float) -> None:
         """
         Set the run current in Amperes.
         The hardware uses a 0-31 scale where 31 = 1.0A for low current scale (default)
         or 31 = 2.0A for high current scale.
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            amps (float): the max current setting in amperes for when the motor is running
         """
 
         self._check_motor_input(motor)
@@ -646,7 +750,13 @@ class Stage:
         self._send_command(command)
 
     def setNVSpeed(self, motor: Literal[1, 2], value: int) -> None:
-        """Set the non-volitile memory max speed in steps/sec"""
+        """
+        Set the non-volitile memory max speed in steps/sec
+
+        Args:
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            value (int): the speed in steps/sec in non-volitile memory
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
@@ -671,7 +781,7 @@ class Stage:
         Set an input configuration mode.
 
         Args:
-            motor (int): motor to command
+            motor (int): motor to command (1=x-axis, 2=y-axis)
             input (int): input to configure (1, 2, 3, or 4)
             value (int): config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
         """
@@ -702,7 +812,7 @@ class Stage:
         Set the index configuration mode
 
         Args:
-            motor (int): the motor to command
+            motor (int): the motor to command (1=x-axis, 2=y-axis)
             value (int): config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
         """
 
@@ -883,7 +993,7 @@ class Stage:
             return float('nan')
         return int(response) / 100.0
 
-    def getGlobalVelocity(self, motor: Literal[1, 2]) -> int:
+    def getNVVelocity(self, motor: Literal[1, 2]) -> int:
         """
         Get the global max velocity in steps/sec
 
@@ -1078,7 +1188,7 @@ class Stage:
         amps = value * self.amps_per_step
         return round(amps, 3)
 
-    def getInitLoadError(self, motor: Literal[1, 2]) -> int:
+    def getHomingLoadError(self, motor: Literal[1, 2]) -> int:
         """
         Get the allowable error setting before hard stop in detected
 
