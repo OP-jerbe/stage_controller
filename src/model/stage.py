@@ -320,7 +320,7 @@ class Stage:
         command = f':{motor}v{value}'
         self._send_command(command)
 
-    def goToAbsPos(self, motor: Literal[1, 2], position: float) -> None:
+    def gotoAbsPos(self, motor: Literal[1, 2], position: float) -> None:
         """Go to absolute position 0-360.0 in degrees"""
 
         self._check_motor_input(motor)
@@ -942,7 +942,7 @@ class Stage:
         command = ':0z'
         return self._send_query(command).replace(command, '')
 
-    def getSetPointPos(self, motor: Literal[1, 2], set_point: int) -> int:
+    def getSetPoint(self, motor: Literal[1, 2], set_point: int) -> dict[str, int]:
         """
         Get a set point's assigned position
 
