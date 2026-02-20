@@ -984,7 +984,7 @@ class Stage:
         self._check_motor_input(motor)
         command = f':{motor}C'
         response = self._send_query(command).replace(command, '')
-        direction_map = {'0': 'CCW', '1': 'CW'}
+        direction_map = {'0': 'CW', '1': 'CCW'}
         return direction_map[response]
 
     def getAccel(self, motor: Literal[1, 2]) -> int:
