@@ -900,13 +900,15 @@ class Stage:
 
     def getNVAccel(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volatile memory acceleration setting in steps/sec-sq
+        Get the non-volatile memory acceleration setting in micro-steps/sec-sq
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the non-volatile acceleration setting in steps/sec-sq
+            int: the non-volatile acceleration setting in micro-steps/sec-sq
         """
 
         self._check_motor_input(motor)
@@ -916,14 +918,16 @@ class Stage:
 
     def getNVVelocity(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volatile max velocity in steps/sec
-        Set by setNVSpeed command
+        Get the non-volatile max velocity in micro-steps/sec
+        (Set by setNVSpeed command)
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the non-volitile max velocity in steps/sec
+            int: the non-volitile max velocity in micro-steps/sec
         """
 
         self._check_motor_input(motor)
@@ -936,10 +940,12 @@ class Stage:
         Get the non-volatile memory speed setting
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the speed setting in steps/sec from non-volatile memory.
+            int: the speed setting in micro-steps/sec from non-volatile memory.
         """
 
         command = f':{motor}S'
@@ -953,7 +959,9 @@ class Stage:
         Get a set point's assigned position
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
             set_point (int): the set point to query (0-9)
 
         Returns:
@@ -982,10 +990,12 @@ class Stage:
 
     def getMSteps(self, motor: Literal[1, 2]) -> int:
         """
-        Get the number of micro-steps per step setting
+        Get the number of micro-steps per step setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             int: the number of micro-steps per step
@@ -998,13 +1008,15 @@ class Stage:
 
     def getDirection(self, motor: Literal[1, 2]) -> str:
         """
-        Get the direction setting of the motor (CW or CCW)
+        Get the direction setting of the motor (`"CW"` or `"CCW"`)
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            str: the direction setting of the motor, "CW" or "CCW"
+            str: the direction setting of the motor, `"CW"` or `"CCW"`
         """
 
         self._check_motor_input(motor)
@@ -1015,13 +1027,15 @@ class Stage:
 
     def getAccel(self, motor: Literal[1, 2]) -> int:
         """
-        Get the acceleration setting
+        Get the acceleration setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the acceleration of the motor
+            int: the acceleration of the motor in micro-steps/sec-sq
         """
 
         self._check_motor_input(motor)
@@ -1031,13 +1045,15 @@ class Stage:
 
     def getSpeed(self, motor: Literal[1, 2]) -> int:
         """
-        Get the current speed of the motor in steps/sec
+        Get the current speed of the motor in steps/sec.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the current speed of the motor in steps/sec
+            int: the current speed of the motor in micro-steps/sec
         """
 
         self._check_motor_input(motor)
@@ -1047,13 +1063,15 @@ class Stage:
 
     def getLoadError(self, motor: Literal[1, 2]) -> int:
         """
-        Get the allowable following-error-before-faulting setting
+        Get the allowable following-error-before-faulting setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the allowable following error setting
+            int: the allowable following error (in micro-steps) while motor is moving before motor halts.
         """
 
         self._check_motor_input(motor)
@@ -1066,7 +1084,9 @@ class Stage:
         Get the RPM of a motor. (xxxx = XX.XX)
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             float: the motor RPM
@@ -1083,13 +1103,15 @@ class Stage:
 
     def getPos(self, motor: Literal[1, 2]) -> int:
         """
-        Get the position of a motor
+        Get the position of a motor.
 
         Args:
-            motor (int): motor to query (1=x-axis, 2=y-axis)
+            motor (int): motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the position of the motor
+            int: the position of the motor in micro-steps
         """
 
         self._check_motor_input(motor)
@@ -1102,7 +1124,9 @@ class Stage:
         Get the absolute position of the motor in degrees.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             float: the absolute position of the motor in degrees (0-360.0)
@@ -1120,10 +1144,13 @@ class Stage:
         Get the encoder counts (can be negative)
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the encoder counts
+            int: the encoder counts where:
+                0=home position
         """
 
         self._check_motor_input(motor)
@@ -1136,7 +1163,9 @@ class Stage:
         Get the Following Error expressed as micro-steps relative to the encoder count (ratio)
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             int: the ratio of micro-steps relative to the encoder count
@@ -1151,13 +1180,17 @@ class Stage:
 
     def getCurrRange(self, motor: Literal[1, 2]) -> int:
         """
-        Get the current range setting.
+        Get the phase current range setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the current range setting (0=high=2.0A, 1=low=1.0A)
+            int: the current range setting where:
+                0=high=2.0 Amps
+                1=low=1.0 Amps
         """
 
         self._check_motor_input(motor)
@@ -1167,10 +1200,12 @@ class Stage:
 
     def getHoldingCurr(self, motor: Literal[1, 2]) -> float:
         """
-        Get the holding current setting
+        Get the holding phase current setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             float: the holding current setting in amps
@@ -1189,10 +1224,12 @@ class Stage:
         Get the run current setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            float: the run current setting in amps
+            float: the maximum current (in amps) delivered to the motor when running
         """
 
         self._check_motor_input(motor)
@@ -1207,14 +1244,24 @@ class Stage:
 
     def getInputConfig(self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4]) -> int:
         """
-        Get an input configuration setting
+        Get an input configuration setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-            input (int): the input to query (1, 2, 3, or 4)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
+            input (int): the input to query where:
+                1=input1
+                2=input2
+                3=input3
+                4=input4
 
         Returns:
-            int: config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+            int: config mode where:
+                0=User Defined
+                1=Motor Error
+                2=Motor Moving
+                3=Motor Stopped
         """
 
         self._check_motor_input(motor)
@@ -1237,8 +1284,12 @@ class Stage:
         Get an output configuration setting.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-            ouput (int): the output to query (1 or 2)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
+            ouput (int): the output to query where:
+                1=output1
+                2=output2
 
         Returns:
             int: the output setting where, 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
@@ -1264,10 +1315,16 @@ class Stage:
         Get the index configuration parameter
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+            int: config mode where:
+                0=User Defined
+                1=Motor Error
+                2=Motor Moving
+                3=Motor Stopped
         """
 
         command = f':{motor}Z'
@@ -1279,7 +1336,9 @@ class Stage:
         Get the encoder counts-per-revolution setting
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             int: the encoder counts-per-revolution setting
@@ -1297,10 +1356,12 @@ class Stage:
         Get the allowable error setting before hard stop in detected
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            int: the error setting
+            int: the allowable error in position during homing sequence before halting
         """
 
         self._check_motor_input(motor)
@@ -1312,13 +1373,15 @@ class Stage:
 
     def getSoftwareRev(self, motor: Literal[1, 2]) -> str:
         """
-        Get the series revision date
+        Get the software revision version loaded on the motor
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
-            str: 'xyz' = Series Revision-Date
+            str: 'xyz' = software revision version
         """
 
         self._check_motor_input(motor)
@@ -1330,7 +1393,9 @@ class Stage:
         Get the baud rate for serial communication
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             int: the baud rate if set
@@ -1355,7 +1420,9 @@ class Stage:
         Get the address of the motors
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
         """
 
         self._check_motor_input(motor)
@@ -1369,7 +1436,9 @@ class Stage:
         Get status of all inputs 4 + index
 
         Args:
-            motor (int): motor to query (1=x-axis, 2=y-axis)
+            motor (int): motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             list(int): [input1, input2, input3, input4, idx] where:
@@ -1387,8 +1456,12 @@ class Stage:
         Get status of an output signal
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
-            output (int): the output to read (1 or 2)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
+            output (int): the output to read where:
+                1=output1
+                2=output2
 
         Returns:
             int: status of the output signal where 1=On and 0=Off.
@@ -1410,7 +1483,22 @@ class Stage:
         return int(response.replace(command, ''))
 
     def getStatus(self, motor: Literal[1, 2]) -> list[int]:
-        """Get the (1) system status and (2) current speed of motor."""
+        """
+        Get the system status and current speed of motor.
+        
+        Args:
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
+
+        Returns:
+            list(int): [x, y] where:
+                x=system_status:
+                    0=system ok
+                    other=???
+                y=motor speed:
+                    -65535 to 65535
+        """
         # response = '0\x000' when motor was not moving
         # response = '0\x0320000' while traveling from 170000 to 312500
         # repsonse = '0\x03-20000' while traveling from 312500 to 27500
@@ -1429,14 +1517,18 @@ class Stage:
 
     def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
         """
-        Get the motor status
+        Get a motors current state.
 
         Args:
-            motor (int): the motor to query (1=x-axis, 2=y-axis)
+            motor (int): the motor to query where:
+                1=x-axis motor
+                2=y-axis motor
 
         Returns:
             list(int): [x, y] where:
-                x=1=Motor Running, x=2=Motor Stopped
+                x=Motor Movement:
+                    1=Motor Running
+                    2=Motor Stopped
                 y=Motor Status:
                     0=Motor Ready
                     1=Motor Not Homed
