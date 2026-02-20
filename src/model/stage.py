@@ -346,7 +346,7 @@ class Stage:
         """
 
         self._check_motor_input(motor)
-        match direction:
+        match direction.upper():
             case 'CW':
                 value = 0
             case 'CCW':
