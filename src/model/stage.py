@@ -171,6 +171,7 @@ class Stage:
     def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
         """
         Set the non-volatile acceleration in steps/sec-sq
+        (Global Acceleration in Configure Parameters tab)
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
@@ -192,7 +193,8 @@ class Stage:
 
     def setNVSpeed(self, motor: Literal[1, 2], value: int) -> None:
         """
-        Set the non-volatile memory max speed in steps/sec
+        Set the non-volatile memory max speed in steps/sec.
+        (Global Velocity in Configure Parameters tab)
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
@@ -276,6 +278,7 @@ class Stage:
 
         Args:
             motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
+            set_point (int): the set point to execute (0-9)
         """
 
         self._check_motor_input(motor)
@@ -384,6 +387,8 @@ class Stage:
     def setSpeed(self, motor: Literal[1, 2], value: int) -> None:
         """
         Set the speed in steps/sec
+        WARNING: Once the command is sent, the motor will begin to move until it is told to stop.
+        NOTE: the position does not update. getPos will return the same number before and after setSpeed command
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
@@ -447,7 +452,7 @@ class Stage:
 
     def jog(self, motor: Literal[1, 2], steps: int) -> None:
         """
-        Jog the motor a number of steps (can be negative)
+        Jog the motor a number of micro-steps (can be negative)
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
@@ -465,7 +470,7 @@ class Stage:
 
     def gotoPos(self, motor: Literal[1, 2], position: int) -> None:
         """
-        Go to a postion
+        Go to a microstep postion
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
@@ -692,7 +697,11 @@ class Stage:
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
             input (int): the input to configure (1 or 2)
-            value (int): the parameter where 0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped
+            value (int): the parameter where:
+                0=User Defined
+                1=Motor Error
+                2=Motor Moving
+                3=Motor Stopped
         """
 
         self._check_motor_input(motor)
@@ -721,7 +730,11 @@ class Stage:
         Args:
             motor (int): motor to command (1=x-axis, 2=y-axis)
             input (int): input to configure (1, 2, 3, or 4)
-            value (int): config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+            value (int): config mode where:
+                0=User Defined
+                1=Motor Error
+                2=Motor Moving
+                3=Motor Stopped
         """
 
         self._check_motor_input(motor)
@@ -751,7 +764,11 @@ class Stage:
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): config mode (0=User Defined, 1=Motor Error, 2=Motor Moving, 3=Motor Stopped)
+            value (int): config mode where:
+                0=User Defined
+                1=Motor Error
+                2=Motor Moving
+                3=Motor Stopped
         """
 
         self._check_motor_input(motor)
@@ -892,6 +909,7 @@ class Stage:
     def getNVVelocity(self, motor: Literal[1, 2]) -> int:
         """
         Get the non-volatile max velocity in steps/sec
+        Set by setNVSpeed command
 
         Args:
             motor (int): the motor to query (1=x-axis, 2=y-axis)
@@ -1381,8 +1399,9 @@ class Stage:
     def getStatus(self, motor: Literal[1, 2]) -> str:
         """Get the (1) system status and (2) current active Set Point."""
         # TODO: check the response of getStatus and format the return value appropriately
-        # response = ':1f0\x000'
-        # response.replace(command, '') = '0\x000' even when motor 1 was sent to setpoint 1
+        # response.replace(command, '') = '0\x000' even when motor 1 was no moving
+        # response.replace(command, '') = '0\x0320000' while traveling to set point 1 from 170000
+        # repsonse.replace(command, '') = '0\x03-20000' while traveling to set point 2 from 312500
 
         self._check_motor_input(motor)
         command = f':{motor}f'
