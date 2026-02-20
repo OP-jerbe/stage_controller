@@ -293,8 +293,19 @@ class Stage:
 
     # --- Movement Settings ---
 
-    def setHalt(self, motor: Literal[0, 1, 2], value: Literal[1, 2]) -> None:
-        """Set the halt type. value=1=Hard Stop. value=2=Soft Stop"""
+    def halt(self, motor: Literal[0, 1, 2] = 0, value: Literal[1, 2] = 1) -> None:
+        """
+        Tell the motor to stop moving.
+
+        Args:
+            motor (int): the motor to command where:
+                0=both (default)
+                1=x-axis
+                2=y-axis
+            value (int): stop type where:
+                1=Hard Stop (default)
+                2=Soft Stop
+        """
 
         self._check_motor_input(motor)
         if not isinstance(value, int):
