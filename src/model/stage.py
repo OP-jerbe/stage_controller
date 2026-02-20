@@ -54,9 +54,7 @@ class Stage:
         if self.com_port:
             self.open_conn(self.com_port)
 
-    def open_conn(
-        self, port: str, baudrate: int = 38400, timeout: float = 1.0
-    ) -> None:
+    def open_conn(self, port: str, baudrate: int = 38400, timeout: float = 1.0) -> None:
         """
         Establishes a serial connection to the instrument at the specified COM port.
 
@@ -84,7 +82,12 @@ class Stage:
             self.ser.close()
             self.ser = None
 
-    def _send_command(self, command: str, term_char: Optional[str] = None, encoding: Optional[str] = None) -> None:
+    def _send_command(
+        self,
+        command: str,
+        term_char: Optional[str] = None,
+        encoding: Optional[str] = None,
+    ) -> None:
         """
         Sends a command string to the stage without expecting a response.
 
@@ -96,9 +99,7 @@ class Stage:
         encoding = encoding or self.ENCODING
 
         if not self.ser or not self.ser.is_open:
-            raise RuntimeError(
-                'No serial connection or the connection is not open.'
-            )
+            raise RuntimeError('No serial connection or the connection is not open.')
 
         if not command.endswith(term_char):
             command += term_char
@@ -111,7 +112,12 @@ class Stage:
 
         print(f'Command: "{command.strip()}"')
 
-    def _send_query(self, query: str, term_char: Optional[str] = None, encoding: Optional[str] = None) -> str:
+    def _send_query(
+        self,
+        query: str,
+        term_char: Optional[str] = None,
+        encoding: Optional[str] = None,
+    ) -> str:
         """
         Sends a query command to the stage, reads the response, and handles unsolicited output.
 
@@ -126,9 +132,7 @@ class Stage:
         encoding = encoding or self.ENCODING
 
         if not self.ser or not self.ser.is_open:
-            raise RuntimeError(
-                'No serial connection or the connection is not open.'
-            )
+            raise RuntimeError('No serial connection or the connection is not open.')
         if not query.endswith(term_char):
             query += term_char
 
@@ -137,7 +141,7 @@ class Stage:
                 self.ser.reset_input_buffer()
                 self.ser.write(query.encode(encoding))
                 response = self._readline(term_char, encoding)
-                print(f'{response = }')
+                # print(f'{response = }')
             except Exception as e:
                 raise ConnectionError(f'Serial Communication Error\n\n{str(e)}')
 
@@ -153,9 +157,7 @@ class Stage:
         if not self.ser or not self.ser.is_open:
             raise RuntimeError('No serial connection or the connection is not open.')
 
-        return (
-            self.ser.read_until(term_char.encode(encoding)).decode(encoding).strip()
-        )
+        return self.ser.read_until(term_char.encode(encoding)).decode(encoding).strip()
 
     @staticmethod
     def _check_motor_input(value: Any, zero_allowed: bool = False) -> None:
@@ -350,7 +352,7 @@ class Stage:
         """
         Set the number of microsteps per step.
         (1 step = 1.8 degrees of rotation of the motor)
-        
+
         Args:
             motor (int): the motor to command where:
                 1=x-axis
@@ -1511,7 +1513,7 @@ class Stage:
     def getStatus(self, motor: Literal[1, 2]) -> list[int]:
         """
         Get the system status and current speed of motor.
-        
+
         Args:
             motor (int): the motor to query where:
                 1=x-axis motor
