@@ -5,6 +5,8 @@ import serial
 
 
 class Stage:
+    TERM_CHAR = '\r'
+    ENCODING = 'ascii'
     MAX_MOTOR_POSITION = 2.147e9
     CONTROLLER_CURRENT_RANGE = 2.0  # AMPS
     CONTROLLER_MAX_CURRENT_VALUE = 31
@@ -37,7 +39,6 @@ class Stage:
         low_current_range: bool = True,
     ) -> None:
         self._lock = Lock()
-        self._term_char = '\r'
         self.com_port = com_port
         self.ser: Optional[serial.Serial] = None
         self.motor_max_current = motor_max_current  # AMPS
@@ -83,7 +84,7 @@ class Stage:
             self.ser.close()
             self.ser = None
 
-    def _send_command(self, command: str) -> None:
+    def _send_command(self, command: str, term_char: Optional[str] = None, encoding: Optional[str] = None) -> None:
         """
         Sends a command string to the stage without expecting a response.
 
@@ -91,23 +92,26 @@ class Stage:
             command (str): The command string to send to the instrument.
                 The carriage return termination character is appended automatically.
         """
+        term_char = term_char or self.TERM_CHAR
+        encoding = encoding or self.ENCODING
+
         if not self.ser or not self.ser.is_open:
             raise RuntimeError(
-                'Attempted to communicate with stage, but no instrument is connected.'
+                'No serial connection or the connection is not open.'
             )
 
-        if not command.endswith(self._term_char):
-            command += self._term_char
+        if not command.endswith(term_char):
+            command += term_char
 
         with self._lock:
             try:
-                self.ser.write(command.encode('ascii'))
+                self.ser.write(command.encode(encoding))
             except Exception as e:
                 raise ConnectionError(f'Serial Communication Error\n\n{str(e)}')
 
         print(f'Command: "{command.strip()}"')
 
-    def _send_query(self, query: str) -> str:
+    def _send_query(self, query: str, term_char: Optional[str] = None, encoding: Optional[str] = None) -> str:
         """
         Sends a query command to the stage, reads the response, and handles unsolicited output.
 
@@ -118,37 +122,39 @@ class Stage:
         Returns:
             str: The decoded and stripped string response received from the instrument.
         """
+        term_char = term_char or self.TERM_CHAR
+        encoding = encoding or self.ENCODING
+
         if not self.ser or not self.ser.is_open:
             raise RuntimeError(
-                'Attempted to communicate with stage, but no instrument is connected.'
+                'No serial connection or the connection is not open.'
             )
-        if not query.endswith(self._term_char):
-            query += self._term_char
+        if not query.endswith(term_char):
+            query += term_char
 
         with self._lock:
             try:
                 self.ser.reset_input_buffer()
-                self.ser.write(query.encode('ascii'))
-                response = self._readline()
+                self.ser.write(query.encode(encoding))
+                response = self._readline(term_char, encoding)
                 print(f'{response = }')
             except Exception as e:
-                print(f'Unexpected Error sending query: {e}')
-                raise
+                raise ConnectionError(f'Serial Communication Error\n\n{str(e)}')
 
         return response
 
-    def _readline(self) -> str:
+    def _readline(self, term_char: str, encoding: str) -> str:
         """
         Reads data from the serial port until the termination character is found.
 
         Returns:
             str: The decoded and stripped line of response data.
         """
-        if not self.ser:
-            raise RuntimeError('No serial port connection.')
+        if not self.ser or not self.ser.is_open:
+            raise RuntimeError('No serial connection or the connection is not open.')
 
         return (
-            self.ser.read_until(self._term_char.encode('ascii')).decode('ascii').strip()
+            self.ser.read_until(term_char.encode(encoding)).decode(encoding).strip()
         )
 
     @staticmethod
