@@ -178,11 +178,13 @@ class Stage:
 
     def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
         """
-        Set the non-volatile acceleration in steps/sec-sq
-        (Global Acceleration in Configure Parameters tab)
+        Set the non-volatile acceleration in steps/sec-sq.
+        (Global Acceleration in Configure Parameters tab.)
 
         Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            motor (int): the motor to command where:
+                1=x-axis
+                2=y-axis
             value (int): the acceleration in steps/sec-sq stored in non-volatile memory
         """
 
@@ -202,11 +204,13 @@ class Stage:
     def setNVSpeed(self, motor: Literal[1, 2], value: int) -> None:
         """
         Set the non-volatile memory max speed in steps/sec.
-        (Global Velocity in Configure Parameters tab)
+        (Global Velocity in Configure Parameters tab.)
 
         Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the speed in steps/sec in non-volatile memory
+            motor (int): the motor to command where:
+                1=x-axis
+                2=y-axis
+            value (int): the speed in micro-steps/sec in non-volatile memory
         """
 
         self._check_motor_input(motor)
@@ -236,7 +240,9 @@ class Stage:
         Create a set point profile. Valid set points are 0-9.
 
         Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            motor (int): the motor to command where:
+                1=x-axis
+                2=y-axis
             set_point (int): the set point profile (0-9)
             position (int): the position the motor should travel to when the set point is executed
             velocity (int): the velocity the motor should use when set the point is executed
@@ -285,7 +291,10 @@ class Stage:
         Go to a predetermined set point position
 
         Args:
-            motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
+            motor (int): the motor to command where:
+                0=both (default)
+                1=x-axis
+                2=y-axis
             set_point (int): the set point to execute (0-9)
         """
 
@@ -332,7 +341,16 @@ class Stage:
         self._send_command(command)
 
     def setMSteps(self, motor: Literal[1, 2], microsteps: int) -> None:
-        """Set the number of microsteps per step"""
+        """
+        Set the number of microsteps per step.
+        (1 step = 1.8 degrees of rotation of the motor)
+        
+        Args:
+            motor (int): the motor to command where:
+                1=x-axis
+                2=y-axis
+            microsteps (int): the number of micro-steps per step.
+        """
 
         self._check_motor_input(motor)
         if not isinstance(microsteps, int):
@@ -341,7 +359,7 @@ class Stage:
             )
         if not 2 <= microsteps < 256:
             raise ValueError(
-                f'Invalid value for microsteps arg: {microsteps}. Valid microsteps value is 2-256'
+                f'Invalid value for microsteps arg: {microsteps}. Valid microsteps value are 2-256'
             )
 
         command = f':{motor}M{microsteps}'
@@ -872,10 +890,12 @@ class Stage:
 
     def setAddress(self, motor: Literal[1, 2], value: int | str) -> None:
         """
-        Set the address of a motor
+        Set the address of a motor.
 
         Args:
-            motor (int): the motor to command (1=x-axis, 2=y-axis)
+            motor (int): the motor to command where:
+                1=x-axis motor
+                2=y-axis motor
             value (int | str): the new address of the motor (1-9, A-F)
         """
 
@@ -900,7 +920,7 @@ class Stage:
 
     def getNVAccel(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volatile memory acceleration setting in micro-steps/sec-sq
+        Get the non-volatile memory acceleration setting in micro-steps/sec-sq.
 
         Args:
             motor (int): the motor to query where:
@@ -918,8 +938,8 @@ class Stage:
 
     def getNVVelocity(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volatile max velocity in micro-steps/sec
-        (Set by setNVSpeed command)
+        Get the non-volatile max velocity in micro-steps/sec.
+        (Set by setNVSpeed command.)
 
         Args:
             motor (int): the motor to query where:
@@ -937,7 +957,7 @@ class Stage:
 
     def getNVSpeed(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volatile memory speed setting
+        Get the non-volatile memory speed setting.
 
         Args:
             motor (int): the motor to query where:
@@ -956,7 +976,7 @@ class Stage:
 
     def getSetPoint(self, motor: Literal[1, 2], set_point: int) -> dict[str, int]:
         """
-        Get a set point's assigned position
+        Get a set point's assigned position.
 
         Args:
             motor (int): the motor to query where:
