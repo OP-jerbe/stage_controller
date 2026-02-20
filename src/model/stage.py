@@ -395,7 +395,7 @@ class Stage:
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
             )
-        if not 0 <= value <= 65535:
+        if not -65535 <= value <= 65535:
             raise ValueError(
                 f'Invalid speed setting: {value}. Speed setting must be between 0 and 65535.'
             )
