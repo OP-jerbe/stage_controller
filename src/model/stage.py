@@ -539,6 +539,10 @@ class Stage:
 
         command = f':{motor}O{value}'
         self._send_command(command)
+        if value == 0:
+            self.controller_current_range = 2.0
+        else:
+            self.controller_current_range = 1.0
 
     def setHoldingCurr(self, motor: Literal[1, 2], amps: float) -> None:
         """
