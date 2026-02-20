@@ -157,18 +157,18 @@ class Stage:
             raise TypeError(
                 f'Expected int for motor arg but got {type(value).__name__}.'
             )
-        
+
         if not zero_allowed:
             if value not in {1, 2}:
                 raise ValueError(
                     f'Invalid motor selection: {value}. Valid motor selections are [1, 2].'
                 )
             return
-        
+
         if value not in {0, 1, 2}:
-                raise ValueError(
-                    f'Invalid motor selection: {value}. Valid motor selections are [0, 1, 2].'
-                )
+            raise ValueError(
+                f'Invalid motor selection: {value}. Valid motor selections are [0, 1, 2].'
+            )
 
     ###################################################################################
     ################################# Set Commands ####################################
