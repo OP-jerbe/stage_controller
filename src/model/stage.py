@@ -51,9 +51,9 @@ class Stage:
         )
 
         if self.com_port:
-            self.open_connection(self.com_port)
+            self.open_conn(self.com_port)
 
-    def open_connection(
+    def open_conn(
         self, port: str, baudrate: int = 38400, timeout: float = 1.0
     ) -> None:
         """
@@ -77,7 +77,7 @@ class Stage:
             print(f'Failed to make a serial connection to {port}.\n\n{str(e)}')
             self.ser = None
 
-    def close_connection(self) -> None:
+    def close_conn(self) -> None:
         """Closes an open serial port"""
         if self.ser and self.ser.is_open:
             self.ser.close()
