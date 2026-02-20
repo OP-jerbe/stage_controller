@@ -152,15 +152,23 @@ class Stage:
         )
 
     @staticmethod
-    def _check_motor_input(value: Any) -> None:
+    def _check_motor_input(value: Any, zero_allowed: bool = False) -> None:
         if not isinstance(value, int):
             raise TypeError(
                 f'Expected int for motor arg but got {type(value).__name__}.'
             )
+        
+        if not zero_allowed:
+            if value not in {1, 2}:
+                raise ValueError(
+                    f'Invalid motor selection: {value}. Valid motor selections are [1, 2].'
+                )
+            return
+        
         if value not in {0, 1, 2}:
-            raise ValueError(
-                f'Invalid motor selection: {value}. Valid motor selections are [0, 1, 2].'
-            )
+                raise ValueError(
+                    f'Invalid motor selection: {value}. Valid motor selections are [0, 1, 2].'
+                )
 
     ###################################################################################
     ################################# Set Commands ####################################
@@ -281,7 +289,7 @@ class Stage:
             set_point (int): the set point to execute (0-9)
         """
 
-        self._check_motor_input(motor)
+        self._check_motor_input(motor, zero_allowed=True)
         if not isinstance(set_point, int):
             raise TypeError(
                 f'Expected int for value arg but got {type(set_point).__name__}.'
@@ -310,7 +318,7 @@ class Stage:
                 2=Soft Stop
         """
 
-        self._check_motor_input(motor)
+        self._check_motor_input(motor, zero_allowed=True)
         if not isinstance(value, int):
             raise TypeError(
                 f'Expected int for value arg but got {type(value).__name__}.'
@@ -627,7 +635,7 @@ class Stage:
             motor (int): the motor to command (0=both, 1=x-axis, 2=y-axis)
         """
 
-        self._check_motor_input(motor)
+        self._check_motor_input(motor, zero_allowed=True)
 
         command = f':{motor}i1'
         self._send_command(command)
@@ -817,7 +825,7 @@ class Stage:
             position (int): the home position
         """
 
-        self._check_motor_input(motor)
+        self._check_motor_input(motor, zero_allowed=True)
         if not isinstance(position, int):
             raise TypeError(
                 f'Expected int for position arg but got {type(position).__name__}.'
@@ -1342,11 +1350,12 @@ class Stage:
         }
         return baud_map[response]
 
-    def getAddresses(self) -> str:
+    def getAddress(self, motor: Literal[1, 2]) -> str:
         """Get the addresses of the motors"""
         # TODO: add the motor arg back in. Sending ":0D" actually sends ":1D"
 
-        command = ':0D'
+        self._check_motor_input(motor)
+        command = f':{motor}D'
         return self._send_query(command).replace(command, '')
 
     # --- Statuses ---
