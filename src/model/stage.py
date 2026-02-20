@@ -1351,8 +1351,12 @@ class Stage:
         return baud_map[response]
 
     def getAddress(self, motor: Literal[1, 2]) -> str:
-        """Get the addresses of the motors"""
-        # TODO: add the motor arg back in. Sending ":0D" actually sends ":1D"
+        """
+        Get the address of the motors
+        
+        Args:
+            motor (int): the motor to query (1=x-axis, 2=y-axis)
+        """
 
         self._check_motor_input(motor)
         command = f':{motor}D'
@@ -1368,7 +1372,7 @@ class Stage:
             motor (int): motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            list(int): [i1, i2, i3, i4, idx] where:
+            list(int): [input1, input2, input3, input4, idx] where:
                 1=High
                 0=Low
         """
