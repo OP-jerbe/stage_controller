@@ -170,11 +170,11 @@ class Stage:
 
     def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
         """
-        Set the non-volitile acceleration in steps/sec-sq
+        Set the non-volatile acceleration in steps/sec-sq
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the acceleration in steps/sec-sq stored in non-volitile memory
+            value (int): the acceleration in steps/sec-sq stored in non-volatile memory
         """
 
         self._check_motor_input(motor)
@@ -192,11 +192,11 @@ class Stage:
 
     def setNVSpeed(self, motor: Literal[1, 2], value: int) -> None:
         """
-        Set the non-volitile memory max speed in steps/sec
+        Set the non-volatile memory max speed in steps/sec
 
         Args:
             motor (int): the motor to command (1=x-axis, 2=y-axis)
-            value (int): the speed in steps/sec in non-volitile memory
+            value (int): the speed in steps/sec in non-volatile memory
         """
 
         self._check_motor_input(motor)
@@ -856,17 +856,17 @@ class Stage:
     ################################# Get Requests ####################################
     ###################################################################################
 
-    # --- Non-Volitile Settings ---
+    # --- Non-Volatile Settings ---
 
-    def getNVAccel(self, motor: Literal[0, 1, 2]) -> int:
+    def getNVAccel(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volitile memory acceleration setting in steps/sec-sq
+        Get the non-volatile memory acceleration setting in steps/sec-sq
 
         Args:
             motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            int: the non-volitile acceleration setting in steps/sec-sq
+            int: the non-volatile acceleration setting in steps/sec-sq
         """
 
         self._check_motor_input(motor)
@@ -876,13 +876,13 @@ class Stage:
 
     def getNVVelocity(self, motor: Literal[1, 2]) -> int:
         """
-        Get the global max velocity in steps/sec
+        Get the non-volatile max velocity in steps/sec
 
         Args:
             motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            int: the global max velocity in steps/sec
+            int: the non-volitile max velocity in steps/sec
         """
 
         self._check_motor_input(motor)
@@ -892,13 +892,13 @@ class Stage:
 
     def getNVSpeed(self, motor: Literal[1, 2]) -> int:
         """
-        Get the non-volitile memory speed setting
+        Get the non-volatile memory speed setting
 
         Args:
             motor (int): the motor to query (1=x-axis, 2=y-axis)
 
         Returns:
-            int: the speed setting in steps/sec from non-volitile memory.
+            int: the speed setting in steps/sec from non-volatile memory.
         """
 
         command = f':{motor}S'
