@@ -1353,7 +1353,7 @@ class Stage:
     def getAddress(self, motor: Literal[1, 2]) -> str:
         """
         Get the address of the motors
-        
+
         Args:
             motor (int): the motor to query (1=x-axis, 2=y-axis)
         """
