@@ -1409,17 +1409,23 @@ class Stage:
         response = self._send_query(command)
         return int(response.replace(command, ''))
 
-    def getStatus(self, motor: Literal[1, 2]) -> str:
-        """Get the (1) system status and (2) current active Set Point."""
-        # TODO: check the response of getStatus and format the return value appropriately
-        # response.replace(command, '') = '0\x000' even when motor 1 was no moving
-        # response.replace(command, '') = '0\x0320000' while traveling to set point 1 from 170000
-        # repsonse.replace(command, '') = '0\x03-20000' while traveling to set point 2 from 312500
+    def getStatus(self, motor: Literal[1, 2]) -> list[int]:
+        """Get the (1) system status and (2) current speed of motor."""
+        # response = '0\x000' when motor was not moving
+        # response = '0\x0320000' while traveling from 170000 to 312500
+        # repsonse = '0\x03-20000' while traveling from 312500 to 27500
 
         self._check_motor_input(motor)
         command = f':{motor}f'
-        response = self._send_query(command).replace(command, '')
-        return response
+        response = (
+            self._send_query(command)
+            .replace(command, '')
+            .replace('\x00', '')
+            .replace('\x03', '')
+        )
+        system_status = int(response[0])
+        speed = int(response[1:])
+        return [system_status, speed]
 
     def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
         """
