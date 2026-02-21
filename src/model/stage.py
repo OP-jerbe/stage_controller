@@ -3,6 +3,9 @@ from typing import Any, Literal, Optional
 
 import serial
 
+# For type hinting
+Addresses = Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'A', 'B', 'C', 'D', 'E', 'F']
+
 
 class Stage:
     TERM_CHAR = '\r'
@@ -35,6 +38,7 @@ class Stage:
     def __init__(
         self,
         com_port: Optional[str] = None,
+        installed_motors: tuple[Addresses, ...] = (1, 2),
         motor_max_current: float = 0.62,
         low_current_range: bool = True,
     ) -> None:
@@ -43,6 +47,7 @@ class Stage:
         self.ser: Optional[serial.Serial] = None
         self.motor_max_current = motor_max_current  # AMPS
         self.controller_current_range = self.CONTROLLER_CURRENT_RANGE
+        self.installed_motors = installed_motors
 
         if low_current_range:
             self.controller_current_range = 1.0
@@ -53,6 +58,9 @@ class Stage:
 
         if self.com_port:
             self.open_conn(self.com_port)
+            if self.ser:
+                for motor in self.installed_motors:
+                    self.setBaud(motor, self.ser.baudrate)
 
     def open_conn(self, port: str, baudrate: int = 38400, timeout: float = 1.0) -> None:
         """
@@ -159,23 +167,21 @@ class Stage:
 
         return self.ser.read_until(term_char.encode(encoding)).decode(encoding).strip()
 
-    @staticmethod
-    def _check_motor_input(value: Any, zero_allowed: bool = False) -> None:
-        if not isinstance(value, int):
+    def _check_motor_input(self, value: Any, zero_allowed: bool = False) -> None:
+
+        if not isinstance(value, (int, str)):
             raise TypeError(
-                f'Expected int for motor arg but got {type(value).__name__}.'
+                f'Expected int or str for motor arg but got {type(value).__name__}.'
             )
 
-        if not zero_allowed:
-            if value not in {1, 2}:
-                raise ValueError(
-                    f'Invalid motor selection: {value}. Valid motor selections are [1, 2].'
-                )
-            return
+        valid_motor_values = set(self.installed_motors)
 
-        if value not in {0, 1, 2}:
+        if zero_allowed:
+            valid_motor_values.add(0)
+
+        if value not in valid_motor_values:
             raise ValueError(
-                f'Invalid motor selection: {value}. Valid motor selections are [0, 1, 2].'
+                f'Invalid motor selection: {value}. Valid motor selections are {list(valid_motor_values)}.'
             )
 
     ###################################################################################
@@ -184,7 +190,7 @@ class Stage:
 
     # --- Non-Volatile Settings ---
 
-    def setNVAccel(self, motor: Literal[1, 2], value: int) -> None:
+    def setNVAccel(self, motor: Addresses, value: int) -> None:
         """
         Set the non-volatile acceleration in steps/sec-sq.
         (Global Acceleration in Configure Parameters tab.)
@@ -209,7 +215,7 @@ class Stage:
         command = f':{motor}A{value}'
         self._send_command(command)
 
-    def setNVSpeed(self, motor: Literal[1, 2], value: int) -> None:
+    def setNVSpeed(self, motor: Addresses, value: int) -> None:
         """
         Set the non-volatile memory max speed in steps/sec.
         (Global Velocity in Configure Parameters tab.)
@@ -238,7 +244,7 @@ class Stage:
 
     def editSetPoint(
         self,
-        motor: Literal[1, 2],
+        motor: Addresses,
         set_point: int,
         position: int,
         velocity: int,
@@ -294,7 +300,7 @@ class Stage:
         command = f':{motor}{set_point}{position},{velocity},{acceleration}'
         self._send_command(command)
 
-    def gotoSetPoint(self, motor: Literal[0, 1, 2], set_point: int) -> None:
+    def gotoSetPoint(self, motor: Addresses, set_point: int) -> None:
         """
         Go to a predetermined set point position
 
@@ -321,7 +327,7 @@ class Stage:
 
     # --- Movement Settings ---
 
-    def halt(self, motor: Literal[0, 1, 2] = 0, value: Literal[1, 2] = 1) -> None:
+    def halt(self, motor: Addresses = 0, value: Literal[1, 2] = 1) -> None:
         """
         Tell the motor to stop moving.
 
@@ -348,7 +354,7 @@ class Stage:
         command = f':{motor}h{value}'
         self._send_command(command)
 
-    def setMSteps(self, motor: Literal[1, 2], microsteps: int) -> None:
+    def setMSteps(self, motor: Addresses, microsteps: int) -> None:
         """
         Set the number of microsteps per step.
         (1 step = 1.8 degrees of rotation of the motor)
@@ -373,7 +379,7 @@ class Stage:
         command = f':{motor}M{microsteps}'
         self._send_command(command)
 
-    def setDirection(self, motor: Literal[1, 2], direction: str) -> None:
+    def setDirection(self, motor: Addresses, direction: str) -> None:
         """
         Set the direction of the motor to "CW" or "CCW"
 
@@ -396,7 +402,7 @@ class Stage:
         command = f':{motor}C{value}'
         self._send_command(command)
 
-    def setAccel(self, motor: Literal[1, 2], value: int) -> None:
+    def setAccel(self, motor: Addresses, value: int) -> None:
         """
         Set the acceleration in steps/sec-sq
 
@@ -418,7 +424,7 @@ class Stage:
         command = f':{motor}a{value}'
         self._send_command(command)
 
-    def setSpeed(self, motor: Literal[1, 2], value: int) -> None:
+    def setSpeed(self, motor: Addresses, value: int) -> None:
         """
         Set the speed in steps/sec
         WARNING: Once the command is sent, the motor will begin to move until it is told to stop.
@@ -442,7 +448,7 @@ class Stage:
         command = f':{motor}s{value}'
         self._send_command(command)
 
-    def setVelocity(self, motor: Literal[1, 2], value: int) -> None:
+    def setVelocity(self, motor: Addresses, value: int) -> None:
         """
         Set the max velocity in steps/sec
 
@@ -464,7 +470,7 @@ class Stage:
         command = f':{motor}v{value}'
         self._send_command(command)
 
-    def setLoadError(self, motor: Literal[1, 2], value: int) -> None:
+    def setLoadError(self, motor: Addresses, value: int) -> None:
         """
         Set the allowable following error before faulting
 
@@ -484,7 +490,7 @@ class Stage:
 
     # --- Positioning ---
 
-    def jog(self, motor: Literal[1, 2], steps: int) -> None:
+    def jog(self, motor: Addresses, steps: int) -> None:
         """
         Jog the motor a number of micro-steps (can be negative)
 
@@ -502,7 +508,7 @@ class Stage:
         command = f':{motor}j{steps}'
         self._send_command(command)
 
-    def gotoPos(self, motor: Literal[1, 2], position: int) -> None:
+    def gotoPos(self, motor: Addresses, position: int) -> None:
         """
         Go to a microstep postion
 
@@ -524,7 +530,7 @@ class Stage:
         command = f':{motor}p{position}'
         self._send_command(command)
 
-    def gotoAbsPos(self, motor: Literal[1, 2], position: float) -> None:
+    def gotoAbsPos(self, motor: Addresses, position: float) -> None:
         """
         Go to absolute position 0-360.0 in degrees
 
@@ -544,7 +550,7 @@ class Stage:
         command = f':{motor}x{position}'
         self._send_command(command)
 
-    def setZero(self, motor: Literal[1, 2]) -> None:
+    def setZero(self, motor: Addresses) -> None:
         """
         Sets the motor's zero position
 
@@ -557,7 +563,7 @@ class Stage:
 
     # --- Phase Current Settings ---
 
-    def setCurrRange(self, motor: Literal[1, 2], value: Literal[0, 1]) -> None:
+    def setCurrRange(self, motor: Addresses, value: Literal[0, 1]) -> None:
         """
         Set the current range to high (2.0 A) or low (1.0 A)
 
@@ -583,7 +589,7 @@ class Stage:
         else:
             self.controller_current_range = 1.0
 
-    def setHoldingCurr(self, motor: Literal[1, 2], amps: float) -> None:
+    def setHoldingCurr(self, motor: Addresses, amps: float) -> None:
         """
         Set the holding current in Amperes.
         The hardware uses a 0-31 scale where 31 = 1.0A for low current scale (default)
@@ -617,7 +623,7 @@ class Stage:
         command = f':{motor}H{value}'
         self._send_command(command)
 
-    def setRunCurr(self, motor: Literal[1, 2], amps: float) -> None:
+    def setRunCurr(self, motor: Addresses, amps: float) -> None:
         """
         Set the run current in Amperes.
         The hardware uses a 0-31 scale where 31 = 1.0A for low current scale (default)
@@ -653,7 +659,7 @@ class Stage:
 
     # --- Initialization ---
 
-    def initMotor(self, motor: Literal[0, 1, 2]) -> None:
+    def initMotor(self, motor: Addresses) -> None:
         """
         Initialize a motor
 
@@ -667,7 +673,7 @@ class Stage:
         self._send_command(command)
 
     def setOutput(
-        self, motor: Literal[1, 2], output: Literal[1, 2], state: Literal[0, 1]
+        self, motor: Addresses, output: Literal[1, 2], state: Literal[0, 1]
     ) -> None:
         """
         Force an output state On or Off.
@@ -698,7 +704,7 @@ class Stage:
         command = f':{motor}{output_map[output]}{state}'
         self._send_command(command)
 
-    def setEncoderCPR(self, motor: Literal[1, 2], value: int) -> None:
+    def setEncoderCPR(self, motor: Addresses, value: int) -> None:
         """
         Set the encoder quadrature counts (PPR x 4).
         Default factory setting is 8192 (2048 PPR * 4).
@@ -723,7 +729,7 @@ class Stage:
         self._send_command(command)
 
     def setOutputConfig(
-        self, motor: Literal[1, 2], input: Literal[1, 2], value: Literal[0, 1, 2, 3]
+        self, motor: Addresses, input: Literal[1, 2], value: Literal[0, 1, 2, 3]
     ) -> None:
         """
         Set an Output Configuration mode.
@@ -754,7 +760,7 @@ class Stage:
 
     def setInputConfig(
         self,
-        motor: Literal[1, 2],
+        motor: Addresses,
         input: Literal[1, 2, 3, 4],
         value: Literal[0, 1, 2, 3],
     ) -> None:
@@ -792,7 +798,7 @@ class Stage:
         command = f':{motor}{input_map[input]}{value}'
         self._send_command(command)
 
-    def setIdxConfig(self, motor: Literal[1, 2], value: int) -> None:
+    def setIdxConfig(self, motor: Addresses, value: int) -> None:
         """
         Set the index configuration mode
 
@@ -820,7 +826,7 @@ class Stage:
 
     # --- Homing ---
 
-    def setHomingLoadError(self, motor: Literal[1, 2], value: int) -> None:
+    def setHomingLoadError(self, motor: Addresses, value: int) -> None:
         """
         Set the allowable error before hard stop is detected when homing the motor.
 
@@ -842,7 +848,7 @@ class Stage:
         command = f':{motor}I{value}'
         self._send_command(command)
 
-    def setHome(self, motor: Literal[0, 1, 2], position: int) -> None:
+    def setHome(self, motor: Addresses, position: int) -> None:
         """
         Home to position
 
@@ -865,7 +871,7 @@ class Stage:
 
     # --- Communication ---
 
-    def setBaud(self, motor: Literal[1, 2], baud: int) -> None:
+    def setBaud(self, motor: Addresses, baud: int) -> None:
         """
         Set the baud rate for serial communication.
 
@@ -896,7 +902,7 @@ class Stage:
         command = f':{motor}B{value}'
         self._send_command(command)
 
-    def setAddress(self, motor: Literal[1, 2], value: int | str) -> None:
+    def setAddress(self, motor: Addresses, value: int | str) -> None:
         """
         Set the address of a motor.
 
@@ -926,7 +932,7 @@ class Stage:
 
     # --- Non-Volatile Settings ---
 
-    def getNVAccel(self, motor: Literal[1, 2]) -> int:
+    def getNVAccel(self, motor: Addresses) -> int:
         """
         Get the non-volatile memory acceleration setting in micro-steps/sec-sq.
 
@@ -944,7 +950,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getNVVelocity(self, motor: Literal[1, 2]) -> int:
+    def getNVVelocity(self, motor: Addresses) -> int:
         """
         Get the non-volatile max velocity in micro-steps/sec.
         (Set by setNVSpeed command.)
@@ -963,7 +969,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getNVSpeed(self, motor: Literal[1, 2]) -> int:
+    def getNVSpeed(self, motor: Addresses) -> int:
         """
         Get the non-volatile memory speed setting.
 
@@ -982,7 +988,7 @@ class Stage:
 
     # --- Set Points ---
 
-    def getSetPoint(self, motor: Literal[1, 2], set_point: int) -> dict[str, int]:
+    def getSetPoint(self, motor: Addresses, set_point: int) -> dict[str, int]:
         """
         Get a set point's assigned position.
 
@@ -1016,7 +1022,7 @@ class Stage:
 
     # --- Movement Settings ---
 
-    def getMSteps(self, motor: Literal[1, 2]) -> int:
+    def getMSteps(self, motor: Addresses) -> int:
         """
         Get the number of micro-steps per step setting.
 
@@ -1034,7 +1040,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getDirection(self, motor: Literal[1, 2]) -> str:
+    def getDirection(self, motor: Addresses) -> str:
         """
         Get the direction setting of the motor (`"CW"` or `"CCW"`)
 
@@ -1053,7 +1059,7 @@ class Stage:
         direction_map = {'0': 'CW', '1': 'CCW'}
         return direction_map[response]
 
-    def getAccel(self, motor: Literal[1, 2]) -> int:
+    def getAccel(self, motor: Addresses) -> int:
         """
         Get the acceleration setting.
 
@@ -1071,7 +1077,7 @@ class Stage:
         response = self._send_query(command)
         return int(response.replace(command, ''))
 
-    def getSpeed(self, motor: Literal[1, 2]) -> int:
+    def getSpeed(self, motor: Addresses) -> int:
         """
         Get the current speed of the motor in steps/sec.
 
@@ -1089,7 +1095,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getLoadError(self, motor: Literal[1, 2]) -> int:
+    def getLoadError(self, motor: Addresses) -> int:
         """
         Get the allowable following-error-before-faulting setting.
 
@@ -1107,7 +1113,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getRPM(self, motor: Literal[1, 2]) -> float:
+    def getRPM(self, motor: Addresses) -> float:
         """
         Get the RPM of a motor. (xxxx = XX.XX)
 
@@ -1129,7 +1135,7 @@ class Stage:
 
     # --- Positioning ---
 
-    def getPos(self, motor: Literal[1, 2]) -> int:
+    def getPos(self, motor: Addresses) -> int:
         """
         Get the position of a motor.
 
@@ -1147,7 +1153,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getAbsPos(self, motor: Literal[1, 2]) -> float:
+    def getAbsPos(self, motor: Addresses) -> float:
         """
         Get the absolute position of the motor in degrees.
 
@@ -1167,7 +1173,7 @@ class Stage:
             return float('nan')
         return int(response) / 10.0
 
-    def getEncoderPos(self, motor: Literal[1, 2]) -> int:
+    def getEncoderPos(self, motor: Addresses) -> int:
         """
         Get the encoder counts (can be negative)
 
@@ -1186,7 +1192,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getFollowingError(self, motor: Literal[1, 2]) -> int:
+    def getFollowingError(self, motor: Addresses) -> int:
         """
         Get the Following Error expressed as micro-steps relative to the encoder count (ratio)
 
@@ -1206,7 +1212,7 @@ class Stage:
 
     # --- Phase Current Settings ---
 
-    def getCurrRange(self, motor: Literal[1, 2]) -> int:
+    def getCurrRange(self, motor: Addresses) -> int:
         """
         Get the phase current range setting.
 
@@ -1226,7 +1232,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getHoldingCurr(self, motor: Literal[1, 2]) -> float:
+    def getHoldingCurr(self, motor: Addresses) -> float:
         """
         Get the holding phase current setting.
 
@@ -1247,7 +1253,7 @@ class Stage:
         amps = value * self.amps_per_step
         return round(amps, 3)
 
-    def getRunCurr(self, motor: Literal[1, 2]) -> float:
+    def getRunCurr(self, motor: Addresses) -> float:
         """
         Get the run current setting.
 
@@ -1270,7 +1276,7 @@ class Stage:
 
     # --- Initialization ---
 
-    def getInputConfig(self, motor: Literal[1, 2], input: Literal[1, 2, 3, 4]) -> int:
+    def getInputConfig(self, motor: Addresses, input: Literal[1, 2, 3, 4]) -> int:
         """
         Get an input configuration setting.
 
@@ -1307,7 +1313,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getOutputConfig(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
+    def getOutputConfig(self, motor: Addresses, output: Literal[1, 2]) -> int:
         """
         Get an output configuration setting.
 
@@ -1338,7 +1344,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getIdxConfig(self, motor: Literal[1, 2]) -> int:
+    def getIdxConfig(self, motor: Addresses) -> int:
         """
         Get the index configuration parameter
 
@@ -1359,7 +1365,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return int(response)
 
-    def getEncoderCPR(self, motor: Literal[1, 2]) -> int:
+    def getEncoderCPR(self, motor: Addresses) -> int:
         """
         Get the encoder counts-per-revolution setting
 
@@ -1379,7 +1385,7 @@ class Stage:
 
     # --- Homing ---
 
-    def getHomingLoadError(self, motor: Literal[1, 2]) -> int:
+    def getHomingLoadError(self, motor: Addresses) -> int:
         """
         Get the allowable error setting before hard stop in detected
 
@@ -1399,7 +1405,7 @@ class Stage:
 
     # --- Communication ---
 
-    def getSoftwareRev(self, motor: Literal[1, 2]) -> str:
+    def getSoftwareRev(self, motor: Addresses) -> str:
         """
         Get the software revision version loaded on the motor
 
@@ -1416,7 +1422,7 @@ class Stage:
         command = f':{motor}z'
         return self._send_query(command).replace(command, '')
 
-    def getBaud(self, motor: Literal[1, 2]) -> int | None:
+    def getBaud(self, motor: Addresses) -> int | None:
         """
         Get the baud rate for serial communication
 
@@ -1443,7 +1449,7 @@ class Stage:
         }
         return baud_map[response]
 
-    def getAddress(self, motor: Literal[1, 2]) -> str:
+    def getAddress(self, motor: Addresses) -> str:
         """
         Get the address of the motors
 
@@ -1459,7 +1465,7 @@ class Stage:
 
     # --- Statuses ---
 
-    def getIdxStates(self, motor: Literal[1, 2]) -> list[int]:
+    def getIdxStates(self, motor: Addresses) -> list[int]:
         """
         Get status of all inputs 4 + index
 
@@ -1479,7 +1485,7 @@ class Stage:
         response = self._send_query(command).replace(command, '')
         return [int(char) for char in response]
 
-    def getOutputStatus(self, motor: Literal[1, 2], output: Literal[1, 2]) -> int:
+    def getOutputStatus(self, motor: Addresses, output: Literal[1, 2]) -> int:
         """
         Get status of an output signal
 
@@ -1510,7 +1516,7 @@ class Stage:
         response = self._send_query(command)
         return int(response.replace(command, ''))
 
-    def getStatus(self, motor: Literal[1, 2]) -> list[int]:
+    def getStatus(self, motor: Addresses) -> list[int]:
         """
         Get the system status and current speed of motor.
 
@@ -1543,7 +1549,7 @@ class Stage:
         speed = int(response[1:])
         return [system_status, speed]
 
-    def getMotorStatus(self, motor: Literal[1, 2]) -> list[int]:
+    def getMotorStatus(self, motor: Addresses) -> list[int]:
         """
         Get a motors current state.
 
